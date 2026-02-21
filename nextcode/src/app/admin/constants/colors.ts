@@ -1,0 +1,11 @@
+export const RED_COLOR = '#B52222';
+export const JAPURA_EATS_COLOR = '#AA2B2B'; // Dark Red/Maroon
+export const INPUT_BG_COLOR = '#F9FAFB'; // Light Gray Background for inputs
+export const CARD_BG = '#FFFFFF'; // White Card Background
+export const MAIN_BG = '#F3F4F6'; // Light Dashboard Background
+export const GRAY_BORDER = '#E5E7EB';
+export const PRIMARY_TEXT = '#1F2937'; // Gray 900
+export const SECONDARY_TEXT = '#6B7280'; // Gray 500
+export const SUCCESS_COLOR = '#10B981'; // Green 500
+export const ERROR_COLOR = '#EF4444'; // Red 500
+export const FOCUS_COLOR = '#FCA5A5'; // Red 300
