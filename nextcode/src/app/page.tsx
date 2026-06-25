@@ -160,7 +160,8 @@ export default function Home() {
         const canteensRes = await fetch("/api/canteens");
         const canteensData = await canteensRes.json();
         
-        const canteens: CanteenCardProps[] = Array.isArray(canteensData) ? canteensData : [];
+        let canteens: CanteenCardProps[] = Array.isArray(canteensData) ? canteensData : [];
+        canteens = [...canteens].sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
         setFeaturedCanteens(canteens);
 
@@ -238,7 +239,7 @@ export default function Home() {
 {/* Featured Canteens Section */}
 <section className="pt-16 py-10 w-full mt-5">
   <div className="container mx-auto flex flex-col gap-y-6">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div className="col-span-full mt-8" style={{ paddingTop: "2rem"}}>
         <SectionHeader
           title="Featured Canteens"
@@ -247,7 +248,7 @@ export default function Home() {
         />
       </div>
 
-      {featuredCanteens.map((canteen, index) => (
+      {featuredCanteens.slice(0, 4).map((canteen, index) => (
         <div
           key={canteen.id}
           className="animate-fade-in"
@@ -324,7 +325,7 @@ export default function Home() {
       </div>
     </section> */}
 
-<section className="py-10 px-4 bg-white">
+<section className="py-10 bg-white">
   <div className="container mx-auto flex flex-col gap-y-10">
     <h2 className={`${inter.className} text-2xl md:text-3xl font-bold text-black`}>
       Popular Food
@@ -348,7 +349,7 @@ export default function Home() {
         </div>
 
         {/* Foods Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {foods.map((food, idx) => (
             <div
               key={idx}

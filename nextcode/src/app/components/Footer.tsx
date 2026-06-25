@@ -47,7 +47,7 @@ export default function Footer({
   return (
 <footer className={`${className} ${inter.className} w-full bg-[rgb(var(--color-hero-bg))]/[0.69]`}>
   {/* Main Footer with guaranteed large vertical space */}
-  <div className="container mx-auto px-4" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
+  <div className="container mx-auto" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
       {/* Brand Section */}
       <div className="flex flex-col gap-3">
@@ -124,7 +124,7 @@ export default function Footer({
 
   {/* Copyright */}
   <div className="bg-gray-800 py-4">
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto">
       <p className="text-center text-sm text-white">
         © {currentYear} JAPURA EATS. All Rights Reserved.
       </p>

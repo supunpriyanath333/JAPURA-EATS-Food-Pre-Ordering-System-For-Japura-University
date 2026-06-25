@@ -122,7 +122,7 @@ interface NavItem {
           {loading ? (
             <p className="text-gray-600 text-lg">Loading...</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {canteens.map((canteen, index) => (
                 <div
                   key={canteen.id}
