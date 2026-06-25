@@ -41,7 +41,7 @@ export async function GET(
     dinner: [],
   };
 
-  data?.forEach((item) => {
+  data?.forEach((item: any) => {
     const type = item.meal_type?.toLowerCase();
 
     const formatted: FoodCardProps = {

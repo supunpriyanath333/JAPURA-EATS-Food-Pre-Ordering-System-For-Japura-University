@@ -1,13 +1,9 @@
 // src/app/admin/api/orders/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseServer } from "@/lib/supabaseServer";
 
-// IMPORTANT: Use the Service Key for backend access
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! 
-);
+const supabase = supabaseServer();
 
 // --- MAPPING DB STATUS TO FRONTEND STATUS TYPE ---
 type DBStatus = 'pending' | 'accepted' | 'preparing' | 'ready_for_pickup' | 'delivered' | 'cancelled';
@@ -58,7 +54,7 @@ export async function GET(req: NextRequest) {
         }
         
         const orderIds = new Set<string>();
-        orderItems.forEach(foodItem => {
+        orderItems.forEach((foodItem: any) => {
             if (foodItem.order_items) {
                 foodItem.order_items.forEach((item: { order_id: string }) => {
                     orderIds.add(item.order_id);

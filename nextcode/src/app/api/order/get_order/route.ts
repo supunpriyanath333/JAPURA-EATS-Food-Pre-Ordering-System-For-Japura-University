@@ -1,13 +1,9 @@
 // api/order/get_order/route.ts
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseServer } from "@/lib/supabaseServer";
 
-// IMPORTANT: Using the standard Supabase client configuration
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Use the Service Key for backend access
-);
+const supabase = supabaseServer();
 
 // --- Utility: Extract User Email from Header ---
 function getEmailFromHeader(req: NextRequest): string | null {

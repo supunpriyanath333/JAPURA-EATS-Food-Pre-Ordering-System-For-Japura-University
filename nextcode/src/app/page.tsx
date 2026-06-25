@@ -158,33 +158,44 @@ export default function Home() {
     const fetchAll = async () => {
       try {
         const canteensRes = await fetch("/api/canteens");
-        const canteens: CanteenCardProps[] = await canteensRes.json();
+        const canteensData = await canteensRes.json();
+        
+        const canteens: CanteenCardProps[] = Array.isArray(canteensData) ? canteensData : [];
 
         setFeaturedCanteens(canteens);
 
         const results = await Promise.all(
           canteens.map(async (canteen) => {
-            const foodsRes = await fetch(`/api/canteens/${canteen.id}/foods`);
-            const foodsData = await foodsRes.json();
+            try {
+              const foodsRes = await fetch(`/api/canteens/${canteen.id}/foods`);
+              const foodsData = await foodsRes.json();
 
-            const flattenFoods = (grouped: Record<string, FoodCardProps[]>) =>
-              Object.values(grouped || {}).flat();
+              if (!foodsData || foodsData.error) {
+                return { canteen, foods: [] };
+              }
 
-            const flat = flattenFoods(foodsData);
+              const flattenFoods = (grouped: Record<string, FoodCardProps[]>) =>
+                Object.values(grouped || {}).flat();
 
-            // 🔥 FIX: remove invalid items
-            const cleanedFoods = flat.filter(
-              (food) =>
-                food &&
-                typeof food.price === "number" &&
-                food.name &&
-                food.id
-            );
+              const flat = flattenFoods(foodsData);
 
-            return {
-              canteen,
-              foods: cleanedFoods,
-            };
+              // 🔥 FIX: remove invalid items
+              const cleanedFoods = flat.filter(
+                (food) =>
+                  food &&
+                  typeof food.price === "number" &&
+                  food.name &&
+                  food.id
+              );
+
+              return {
+                canteen,
+                foods: cleanedFoods,
+              };
+            } catch (err) {
+              console.error(`Error fetching foods for canteen ${canteen.id}:`, err);
+              return { canteen, foods: [] };
+            }
           })
         );
 

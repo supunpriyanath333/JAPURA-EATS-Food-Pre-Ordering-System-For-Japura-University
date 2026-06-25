@@ -84,8 +84,13 @@ interface NavItem {
       const res = await fetch("/api/canteens");
       if (!res.ok) throw new Error("Failed to fetch canteens");
 
-      const data: CanteenCardProps[] = await res.json();
-      setCanteens(data);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setCanteens(data);
+      } else {
+        console.error("Canteen data is not an array:", data);
+        setCanteens([]);
+      }
     } catch (err) {
       console.error("Error fetching canteens:", err);
     } finally {

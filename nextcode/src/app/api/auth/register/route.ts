@@ -2,12 +2,9 @@
 import { NextResponse } from "next/server";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
-import { createClient } from '@supabase/supabase-js';
+import { supabaseServer } from "@/lib/supabaseServer";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+const supabase = supabaseServer();
 
 
 const scrypt = promisify(_scrypt);
