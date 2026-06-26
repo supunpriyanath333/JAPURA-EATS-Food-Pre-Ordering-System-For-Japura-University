@@ -44,7 +44,7 @@
   --color-black-original: #000000;
   
   /* Background Colors */
-  --bg-primary: var(--color-white);
+  --bg-primary: #f0f2f5;
   --bg-secondary: var(--color-gray-100);
   --bg-dark: var(--color-primary-green);
   

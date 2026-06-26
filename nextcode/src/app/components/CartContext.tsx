@@ -8,6 +8,7 @@ export interface CartItem {
   price: number;
   quantity: number;
   image?: string;
+  specialInstructions?: string;
 }
 
 interface CartContextType {
@@ -18,6 +19,21 @@ interface CartContextType {
   decreaseQuantity: (id: string) => void; 
   clearCart: () => void;
   cartTotal: number; // ✨ NEW: Add cartTotal to the context type
+  
+  // ✨ NEW: Global Food Modal state
+  selectedFoodForModal: FoodCardProps | null;
+  openFoodModal: (food: FoodCardProps) => void;
+  closeFoodModal: () => void;
+}
+
+export interface FoodCardProps {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  currency?: string;
+  available?: boolean;
 }
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
@@ -29,6 +45,13 @@ export const useCart = () => {
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [selectedFoodForModal, setSelectedFoodForModal] = useState<FoodCardProps | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   // Function to find and update quantity
   const updateQuantity = (id: string, delta: number) => {
@@ -54,6 +77,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return [...prev, { ...item, quantity: 1 }];
       }
     });
+    showToast(`Added ${item.name} to cart!`);
   };
 
   const cartTotal = cartItems.reduce(
@@ -83,9 +107,43 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         cartTotal, // ✨ NEW: Include cartTotal in the context value
         increaseQuantity,
         decreaseQuantity,
+        selectedFoodForModal,
+        openFoodModal: setSelectedFoodForModal,
+        closeFoodModal: () => setSelectedFoodForModal(null),
       }}
     >
       {children}
+      
+      {/* Global Toast */}
+      {toastMessage && (
+        <div style={{
+          position: "fixed",
+          top: "85px",
+          right: "24px",
+          background: "#22c55e",
+          color: "white",
+          padding: "12px 24px",
+          borderRadius: "12px",
+          boxShadow: "0 10px 25px rgba(34,197,94,0.4)",
+          zIndex: 10000,
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          fontWeight: 600,
+          animation: "toastFadeDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {toastMessage}
+          <style>{`
+            @keyframes toastFadeDown {
+              from { opacity: 0; transform: translateY(-20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+        </div>
+      )}
     </CartContext.Provider>
   );
 };

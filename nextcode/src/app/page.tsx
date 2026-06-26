@@ -165,8 +165,10 @@ export default function Home() {
 
         setFeaturedCanteens(canteens);
 
+        const topCanteens = canteens.slice(0, 4);
+
         const results = await Promise.all(
-          canteens.map(async (canteen) => {
+          topCanteens.map(async (canteen) => {
             try {
               const foodsRes = await fetch(`/api/canteens/${canteen.id}/foods`);
               const foodsData = await foodsRes.json();
@@ -181,13 +183,16 @@ export default function Home() {
               const flat = flattenFoods(foodsData);
 
               // 🔥 FIX: remove invalid items
-              const cleanedFoods = flat.filter(
+              let cleanedFoods = flat.filter(
                 (food) =>
                   food &&
                   typeof food.price === "number" &&
                   food.name &&
                   food.id
               );
+              
+              // Sort by rating descending and take top 3
+              cleanedFoods = cleanedFoods.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3);
 
               return {
                 canteen,
@@ -200,7 +205,7 @@ export default function Home() {
           })
         );
 
-        setCanteensWithFoods(results);
+        setCanteensWithFoods(results.filter(r => r.foods.length > 0));
       } catch (error) {
         console.error("Error fetching canteens & foods:", error);
       }
@@ -236,17 +241,14 @@ export default function Home() {
   {/* Main content with consistent spacing */}
   <div className="flex flex-col gap-y-16">
     {/* Featured Canteens Section */}
-{/* Featured Canteens Section */}
-<section className="pt-16 py-10 w-full mt-5">
+<section className="py-16">
   <div className="container mx-auto flex flex-col gap-y-6">
+    <SectionHeader
+      title="Featured Canteens"
+      linkText="View All Canteens"
+      linkHref="/canteens"
+    />
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div className="col-span-full mt-8" style={{ paddingTop: "2rem"}}>
-        <SectionHeader
-          title="Featured Canteens"
-          linkText="View All Canteens"
-          linkHref="/canteens"
-        />
-      </div>
 
       {featuredCanteens.slice(0, 4).map((canteen, index) => (
         <div
@@ -325,26 +327,31 @@ export default function Home() {
       </div>
     </section> */}
 
-<section className="py-10 bg-white">
-  <div className="container mx-auto flex flex-col gap-y-10">
-    <h2 className={`${inter.className} text-2xl md:text-3xl font-bold text-black`}>
-      Popular Food
-    </h2>
+<section className="py-16">
+  <div className="container mx-auto flex flex-col gap-y-12">
+    <SectionHeader
+      title="Popular Food"
+      linkText="View Full Menu"
+      linkHref="/menu"
+    />
 
     {canteensWithFoods.map(({ canteen, foods }, index) => (
-      <div key={canteen.id} className="flex flex-col gap-y-6">
+      <div key={canteen.id} className="flex flex-col gap-y-8">
         
         {/* Canteen Title */}
-        <div className="flex items-center justify-between">
-          <h3 className={`${inter.className} text-base font-bold text-black`}>
-            From {canteen.name}
+        <div className="flex items-center gap-4 mb-2">
+          <h3 className={`${inter.className} text-xl md:text-2xl font-bold text-gray-800 whitespace-nowrap`}>
+            From <span className="text-[#B52222]">{canteen.name}</span>
           </h3>
+          
+          <div className="flex-1 h-[2px] bg-gray-200/80 rounded-full"></div>
 
           <a
             href={`/canteen/${canteen.id}`}
-            className={`${inter.className} text-sm text-gray-500 hover:text-gray-700 transition-colors`}
+            className={`${inter.className} text-sm md:text-base font-bold text-gray-500 hover:text-[#B52222] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap`}
           >
             see more
+            <svg className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
           </a>
         </div>
 

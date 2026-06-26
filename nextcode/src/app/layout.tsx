@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { CartProvider } from "./components/CartContext";
+import FoodModal from "./components/FoodModal";
 import LoginModal from "./components/LoginModal";
 import Header from "./components/Header";
 
@@ -43,19 +44,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
 
-        {/* Show Header ONLY on client-side user pages */}
-        {!isAdminRoute && (
-          <Header
-            user={user}
-            setUser={setUser}
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen}
-          />
-        )}
-
         {/* Cart Context wraps all pages */}
         <CartProvider>
+          {/* Show Header ONLY on client-side user pages */}
+          {!isAdminRoute && (
+            <Header
+              user={user}
+              setUser={setUser}
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+            />
+          )}
           {children}
+          {/* Global Food Modal */}
+          <FoodModal />
         </CartProvider>
 
         {/* User Login Modal -> ONLY on user pages */}
