@@ -186,7 +186,7 @@ export default function Footer({
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #df8b8b;
+          color: #ece2e2ff;
           flex-shrink: 0;
         }
         .ftr-contact-label {
@@ -244,11 +244,13 @@ export default function Footer({
 
           {/* Brand */}
           <div>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-              <Image src="/landing/logo.png" width={68} height={58} alt="JAPURA EATS" style={{ objectFit: 'contain' }} />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="ftr-brand-name">JAPURA EATS</span>
-                <span style={{ fontSize: '0.78rem', color: '#ebd573', fontStyle: 'italic', marginTop: '-2px' }}>The Easier Way to Eat at Japura.</span>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '16px', textDecoration: 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Image src="/landing/logo.png" width={110} height={110} alt="JAPURA EATS" style={{ objectFit: 'contain' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <span className="ftr-brand-name" style={{ fontSize: '1.7rem', lineHeight: '1.1' }}>JAPURA EATS</span>
+                <span style={{ fontSize: '0.85rem', color: '#ebd573', fontStyle: 'italic', justifyContent: 'center', marginTop: '4px' }}>The Easier Way to Eat at Japura.</span>
               </div>
             </Link>
             <p className="ftr-brand-tagline" style={{ marginTop: '1.25rem' }}>

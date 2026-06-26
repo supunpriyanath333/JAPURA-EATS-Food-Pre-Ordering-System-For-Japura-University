@@ -363,7 +363,12 @@ export default function Home() {
               className="animate-fade-in"
               style={{ animationDelay: `${idx * 0.1}s` }}
             >
-              <FoodCard {...food} onAddToCart={handleAddToCart} />
+              <FoodCard 
+                {...food} 
+                onAddToCart={handleAddToCart} 
+                canteenId={canteen.id}
+                canteenName={canteen.name}
+              />
             </div>
           ))}
         </div>

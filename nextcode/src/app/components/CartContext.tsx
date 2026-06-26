@@ -9,6 +9,8 @@ export interface CartItem {
   quantity: number;
   image?: string;
   specialInstructions?: string;
+  canteenId: string; // ✨ NEW: to group carts
+  canteenName: string; // ✨ NEW: to group carts
 }
 
 interface CartContextType {
@@ -18,9 +20,8 @@ interface CartContextType {
   increaseQuantity: (id: string) => void; 
   decreaseQuantity: (id: string) => void; 
   clearCart: () => void;
-  cartTotal: number; // ✨ NEW: Add cartTotal to the context type
+  cartTotal: number;
   
-  // ✨ NEW: Global Food Modal state
   selectedFoodForModal: FoodCardProps | null;
   openFoodModal: (food: FoodCardProps) => void;
   closeFoodModal: () => void;
@@ -34,6 +35,8 @@ export interface FoodCardProps {
   image?: string;
   currency?: string;
   available?: boolean;
+  canteenId?: string; // ✨ NEW
+  canteenName?: string; // ✨ NEW
 }
 const CartContext = createContext<CartContextType | undefined>(undefined);
 

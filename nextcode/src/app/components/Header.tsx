@@ -104,7 +104,7 @@ export default function Header({
           z-index: 50;
         }
         .hdr-bar {
-          background: rgba(222, 222, 188, 0.84);
+          background: rgba(201, 201, 79, 0.94);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border-bottom: 1.5px solid rgba(181, 34, 34, 0.12);
@@ -112,7 +112,7 @@ export default function Header({
           transition: all 0.3s ease;
         }
         .hdr.scrolled .hdr-bar {
-          background: rgba(222, 222, 188, 0.84);
+          background: rgba(201, 201, 79, 0.94);
           box-shadow: 0 4px 24px rgba(120, 60, 0, 0.12);
         }
         .hdr-inner {
@@ -381,7 +381,7 @@ export default function Header({
               </button>
 
               {/* Cart - proper shopping cart icon */}
-              <Link href="/checkout" id="header-cart-icon" className="hdr-cart-btn">
+              <Link href="/cart" id="header-cart-icon" className="hdr-cart-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="9" cy="21" r="1" />
                   <circle cx="20" cy="21" r="1" />

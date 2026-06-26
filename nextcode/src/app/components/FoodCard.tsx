@@ -15,6 +15,8 @@ interface FoodCardProps {
   className?: string;
   available: boolean;
   image_url?: string;
+  canteenId?: string;
+  canteenName?: string;
 }
 
 export default function FoodCard({
@@ -29,6 +31,8 @@ export default function FoodCard({
   className = "",
   available,
   image_url,
+  canteenId,
+  canteenName,
 }: FoodCardProps) {
   const { addToCart, openFoodModal } = useCart();
   const [hovered, setHovered] = useState(false);
@@ -36,7 +40,7 @@ export default function FoodCard({
 
   const handleOpenModal = () => {
     if (!available) return;
-    openFoodModal({ id, name, description, price, image: displayImage, currency, available });
+    openFoodModal({ id, name, description, price, image: displayImage, currency, available, canteenId, canteenName });
   };
 
   return (
@@ -191,21 +195,24 @@ export default function FoodCard({
 
             <button
               onClick={handleOpenModal}
-              className="glass-btn-cart"
+              className={available ? "glass-btn-cart" : ""}
+              disabled={!available}
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "6px",
-                background: "#B52222",
+                background: available ? "#B52222" : "#9ca3af",
                 border: "none",
                 borderRadius: "10px",
                 color: "white",
                 fontWeight: 700,
                 fontSize: "0.8rem",
                 padding: "8px 16px",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(181,34,34,0.25)",
+                cursor: available ? "pointer" : "not-allowed",
+                boxShadow: available ? "0 4px 12px rgba(181,34,34,0.25)" : "none",
+                opacity: available ? 1 : 0.5,
+                transition: "all 0.2s ease",
               }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

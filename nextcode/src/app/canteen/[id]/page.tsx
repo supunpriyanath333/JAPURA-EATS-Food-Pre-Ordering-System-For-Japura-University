@@ -39,7 +39,7 @@ interface CanteenProps {
   rating: number;
   phone: string;
   imageUrl: string;
-  isOpen?: boolean; // optional, default true
+  isOpen?: boolean;
   operatingHours?: {
     breakfast: { start: string; end: string };
     lunch: { start: string; end: string };
@@ -47,138 +47,35 @@ interface CanteenProps {
   };
 }
 
-
-  // You can also fetch canteen info dynamically here if needed
-  // const canteenData: CanteenProps = {
-  //   id: "001",
-  //   name: "Canteen 0001",
-  //   description: "The largest canteen serving authentic Sri Lankan Cuisine.",
-  //   location: "Faculty of Management",
-  //   rating: 4.7,
-  //   isOpen: true,
-  //   phone: "+94 77 123 4567",
-  //   image: "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&auto=format&fit=crop&q=80",
-  //   operatingHours: {
-  //     breakfast: { start: "7.00 AM", end: "10.00 AM" },
-  //     lunch: { start: "11.00 AM", end: "02.00 PM" },
-  //     dinner: { start: "5.30 PM", end: "08.30 PM" },
-  //   },
-  // };
-
-// Sample data - In a real app, this would come from an API
-// const canteenData = {
-//   id: "001",
-//   name: "Canteen 0001",
-//   description: "The largest canteen serving authentic Sri Lankan Cuisine.",
-//   location: "Faculty of Management",
-//   rating: 4.7,
-//   isOpen: true,
-//   phone: "+94 77 123 4567",
-//   image: "https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&auto=format&fit=crop&q=80",
-//   operatingHours: {
-//     breakfast: { start: "7.00 AM", end: "10.00 AM" },
-//     lunch: { start: "11.00 AM", end: "02.00 PM" },
-//     dinner: { start: "5.30 PM", end: "08.30 PM" },
-//   },
-// };
-
-// const menuItems = {
-//   BREAKFAST: [
-//     {
-//       id: "food-001",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-002",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-003",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-004",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-005",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-006",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-007",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//     {
-//       id: "food-008",
-//       name: "String Hoppers with Curry",
-//       description: "Traditional string hoppers served with dhal curry and sumbol",
-//       price: 150,
-//       rating: 4.7,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//   ],
-//   LUNCH: [
-//     {
-//       id: "food-101",
-//       name: "Rice and Curry",
-//       description: "Traditional Sri Lankan rice with mixed curries",
-//       price: 200,
-//       rating: 4.8,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//   ],
-//   DINNER: [
-//     {
-//       id: "food-201",
-//       name: "Kottu Roti",
-//       description: "Chopped roti with vegetables and spices",
-//       price: 180,
-//       rating: 4.6,
-//       image: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=300&auto=format&fit=crop&q=80",
-//     },
-//   ],
-// };
-
 export default function CanteenPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const canteenId = resolvedParams.id;
   const [error, setError] = useState<string | null>(null);
-  // State for canteen info and foods
   const [canteenData, setCanteenData] = useState<CanteenProps>();
+  const getCurrentOrderMeal = (): MealType => {
+    const now = new Date();
+    const hours = now.getHours();
+
+    // Breakfast orders: 5:00 PM (17:00) – 6:00 AM (06:00) next day
+    if (hours >= 17 || hours < 6) return "BREAKFAST";
+
+    // Lunch orders: 6:00 AM – 11:00 AM
+    if (hours >= 6 && hours < 11) return "LUNCH";
+
+    // Dinner orders: 11:00 AM – 5:00 PM
+    return "DINNER";
+  };
 
   const [selectedMealType, setSelectedMealType] = useState<MealType>("BREAKFAST");
+  const [currentOrderMeal, setCurrentOrderMeal] = useState<MealType>("BREAKFAST");
+
+  // Set the meal type on mount to avoid hydration mismatch if SSR is used
+  useEffect(() => {
+    const meal = getCurrentOrderMeal();
+    setCurrentOrderMeal(meal);
+    setSelectedMealType(meal);
+  }, []);
+
   const [foods, setFoods] = useState<FoodGrouped>({
     breakfast: [],
     lunch: [],
@@ -198,18 +95,15 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
       setError(null);
 
       try {
-        // Fetch canteen details
         const canteenRes = await fetch(`/api/canteens/${canteenId}`);
         if (!canteenRes.ok) throw new Error("Failed to fetch canteen details");
         const canteenData: CanteenProps = await canteenRes.json();
         setCanteenData(canteenData);
 
-        // Fetch foods
         const foodsRes = await fetch(`/api/canteens/${canteenId}/foods`);
         if (!foodsRes.ok) throw new Error("Failed to fetch foods");
         const foodsData: FoodGrouped = await foodsRes.json();
         setFoods(foodsData);
-
       } catch (err: any) {
         setError(err.message || "Something went wrong");
         console.error(err);
@@ -221,184 +115,261 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
     fetchCanteenAndFoods();
   }, [canteenId]);
 
-
-  
-  
-   
-  const navItems = [
-    {
-      label: "HOME",
-      href: "/",
-      isActive: false,
-      icon: (
-        <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-        </svg>
-      ),
-    },
-    {
-      label: "CANTEENS",
-      href: "/canteens",
-      isActive: true,
-      icon: (
-        <svg className="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-      ),
-    },
-    {
-      label: "ORDERS",
-      href: "/orders",
-      isActive: false,
-      icon: (
-        <svg className="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-    },
-  ];
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #eee', borderTopColor: '#B52222', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }}></div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+  if (error) return <p style={{ padding: '2rem', color: '#ef4444' }}>Error: {error}</p>;
   if (!canteenData) return null;
 
+  const isOpen = canteenData.isOpen !== false;
+  const canOrder = selectedMealType === currentOrderMeal;
+
+  const getOrderTimeDisplay = (meal: MealType) => {
+    switch (meal) {
+      case "BREAKFAST": return "5:00 PM to 6:00 AM (next day)";
+      case "LUNCH": return "6:00 AM to 11:00 AM";
+      case "DINNER": return "11:00 AM to 5:00 PM";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
-      {/* Header */}
-     
+    <div style={{
+      minHeight: '100vh',
+      background: 'transparent',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
 
-      
-      {/* Canteen Information Section */}
-<section className="bg-white">
-  <div className="container mx-auto px-4">
-    <div
-      className="rounded-2xl border border-gray-200 shadow-sm bg-white"
-      style={{ paddingTop: "2rem", paddingBottom: "2rem", paddingLeft: "1.5rem", paddingRight: "1.5rem" }}
-    >
-      <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-        {/* Canteen Image */}
-        <div>
-          <img
-            src={canteenData?.imageUrl}
-            alt={canteenData?.name}
-            className="w-[190px] h-[180px] object-cover rounded-xl border border-gray-200"
-          />
-        </div>
+      {/* ── Canteen Info Section (Glass UI Card) ── */}
+      <section style={{ position: 'relative', zIndex: 1, padding: '2.5rem 0 1rem' }}>
+        <div className="container mx-auto px-4">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.45)', // Glass background
+            backdropFilter: 'blur(28px)', // Strong blur
+            WebkitBackdropFilter: 'blur(28px)',
+            border: '1px solid rgba(255, 255, 255, 0.8)', // Frosty border
+            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.08)',
+            borderRadius: '24px',
+            padding: '2.5rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
 
-        {/* Canteen Details */}
-        <div className="flex-1">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-            <div>
-              <h1 className={`${inter.className} text-2xl font-bold text-black mb-1`}>
-                {canteenData?.name}
-              </h1>
-              <p className={`${inter.className} text-base text-gray-600 mb-1`}>
-                {canteenData?.description}
-              </p>
-              <div className={`${inter.className} flex items-center gap-2 text-sm text-gray-700 mb-1`}>
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <span>{canteenData?.location}</span>
-              </div>
-              <div className={`${inter.className} flex items-center gap-2 text-sm`}>
-                <span className="text-[#22c55e] font-medium">●</span>
-                <span className="text-[#22c55e] font-medium">
-                  {canteenData?.isOpen ?? true ? "Open Now" : "Closed"}
-                </span>
-              </div>
-            </div>
-
-            {/* Rating and Phone */}
-            <div className="flex flex-col items-start lg:items-end gap-3">
-              <div className="bg-white border border-black rounded-md inline-flex items-center gap-2" style={{ minWidth: "80px", minHeight: "32px", padding: "6px 12px" }}>
-                <svg className="w-5 h-5 text-[#F7C948]" fill="#F7C948" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-                <span className="text-black font-semibold text-base">
-                  {canteenData?.rating.toFixed(1)}
-                </span>
-              </div>
-              <div className={`${inter.className} flex items-center gap-2 text-sm text-gray-700`}>
-                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+              {/* Image */}
+              <div style={{ flexShrink: 0 }}>
+                <img
+                  src={canteenData.imageUrl || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=80"}
+                  alt={canteenData.name}
+                  style={{
+                    width: '220px', height: '220px', objectFit: 'cover',
+                    borderRadius: '20px', border: '3px solid rgba(255, 255, 255, 0.9)',
+                    boxShadow: '0 12px 30px rgba(0,0,0,0.1)'
+                  }}
                 />
-                </svg>
-                <span>{canteenData?.phone}</span>
+              </div>
+
+              {/* Details */}
+              <div style={{ flex: 1, minWidth: '280px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+                  {/* Left side info */}
+                  <div>
+                    <h1 className={inter.className} style={{
+                      fontSize: '2rem', fontWeight: 800, color: '#111',
+                      margin: '0 0 8px', lineHeight: 1.2, letterSpacing: '-0.03em'
+                    }}>
+                      {canteenData.name}
+                    </h1>
+
+                    {canteenData.description && (
+                      <p className={inter.className} style={{ fontSize: '0.95rem', color: '#4b5563', marginBottom: '12px', lineHeight: 1.5 }}>
+                        {canteenData.description}
+                      </p>
+                    )}
+
+                    {/* Location */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', fontSize: '0.9rem', color: '#374151' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B52222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span style={{ fontWeight: 600 }}>{canteenData.location}</span>
+                    </div>
+
+                    {/* Open/Closed */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
+                      <span style={{ color: isOpen ? '#16a34a' : '#ef4444', fontSize: '1rem' }}>●</span>
+                      <span style={{ color: isOpen ? '#16a34a' : '#dc2626', fontWeight: 700 }}>
+                        {isOpen ? 'Open Now' : 'Closed'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right side - Rating & Phone */}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
+                    {/* Rating (Glass Badge) */}
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      background: 'rgba(255, 255, 255, 0.65)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.8)',
+                      borderRadius: '12px', padding: '8px 16px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.04)'
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="#f59e0b">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#92400e' }}>
+                        {canteenData.rating?.toFixed(1) ?? "—"}
+                      </span>
+                    </div>
+
+                    {/* Phone */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.85rem', color: '#4b5563', fontWeight: 500, marginTop: '30px' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63 19.79 19.79 0 012.05 2 2 2 0 014 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0120 17.92z" />
+                      </svg>
+                      <span>{canteenData.phone}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Operating Hours */}
+                <div style={{
+                  display: 'flex', gap: '17rem', marginTop: '24px', paddingTop: '20px',
+                  borderTop: '1px solid rgba(255,255,255,0.7)', flexWrap: 'wrap',
+                }}>
+                  {[
+                    { label: 'Breakfast', hours: canteenData.operatingHours?.breakfast || { start: '7:00 AM', end: '11:00 AM' } },
+                    { label: 'Lunch', hours: canteenData.operatingHours?.lunch || { start: '11:30 AM', end: '3:00 PM' } },
+                    { label: 'Dinner', hours: canteenData.operatingHours?.dinner || { start: '5:30 PM', end: '8:30 PM' } },
+                  ].map((item) => (
+                    <div key={item.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{
+                        background: 'rgba(255,255,255,0.8)', padding: '6px', borderRadius: '8px',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                      }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B52222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+                        </svg>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span className={inter.className} style={{ fontSize: '0.95rem', fontWeight: 800, color: '#111', lineHeight: 1.2 }}>
+                          {item.label}
+                        </span>
+                        <span className={inter.className} style={{ fontSize: '0.8rem', fontWeight: 600, color: '#4b5563', marginTop: '2px' }}>
+                          {item.hours.start} - {item.hours.end}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-
-      {/* Meal Type Tabs Section */}
-<section className="bg-white border-t border-b border-gray-200 py-8">
-  <div className="container mx-auto px-4">
-    <div className="flex justify-center">
-      <div className="inline-flex items-center rounded-full border border-black/20 bg-[rgb(var(--color-hero-bg))]/[0.9] px-4 py-2 shadow-sm">
-        {(["BREAKFAST", "LUNCH", "DINNER"] as MealType[]).map((mealType) => {
-          const isActive = selectedMealType === mealType;
-          return (
-            <button
-              key={mealType}
-              onClick={() => setSelectedMealType(mealType)}
-              className={`${inter.className} font-bold text-xs md:text-sm px-6 py-2 rounded-full transition-all duration-200 ${
-                isActive ? "bg-[#B52222] text-white shadow-inner" : "bg-transparent text-black"
-              }`}
-              style={{
-                paddingTop: "1rem",
-                paddingBottom: "1rem",
-                paddingLeft: "2rem",
-                paddingRight: "2rem",
-                ...(isActive ? { border: "1px solid #00000080" } : {}),
-              }}
-            >
-              {mealType}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  </div>
-</section>
-
-{/* Menu Section */}
-<section className="bg-white py-8">
-  <div className="container mx-auto px-4">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {foods[selectedMealType.toLowerCase() as keyof FoodGrouped].map((food, index) => (
-        <div
-          key={food.id}
-          className="animate-fade-in"
-          style={{ animationDelay: `${index * 0.1}s` }}
-        >
-          <FoodCard {...food} onAddToCart={handleAddToCart} available />
+      {/* ── Meal Type Tabs (Glass UI Pill) ── */}
+      <section style={{
+        position: 'sticky', top: '70px', zIndex: 30, padding: '0 0 16px 0',
+      }}>
+        <div className="container mx-auto px-4" style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(255, 255, 255, 0.45)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '9999px', padding: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.8)',
+            boxShadow: '0 8px 24px rgba(31, 38, 135, 0.08), inset 0 2px 4px rgba(255,255,255,0.5)'
+          }}>
+            {(["BREAKFAST", "LUNCH", "DINNER"] as MealType[]).map((mealType) => {
+              const isActive = selectedMealType === mealType;
+              return (
+                <button
+                  key={mealType}
+                  onClick={() => setSelectedMealType(mealType)}
+                  className={inter.className}
+                  style={{
+                    padding: '10px 28px',
+                    borderRadius: '9999px',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    letterSpacing: '0.03em',
+                    cursor: 'pointer',
+                    border: 'none',
+                    transition: 'all 0.2s ease',
+                    background: isActive ? '#B52222' : 'transparent',
+                    color: isActive ? '#fff' : '#6b7280',
+                    boxShadow: isActive ? '0 2px 8px rgba(181,34,34,0.3)' : 'none',
+                  }}
+                >
+                  {mealType}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-</section>
+      </section>
+
+      {/* ── Menu Grid ── */}
+      <section style={{ flex: 1, padding: '1rem 0 4rem' }}>
+        <div className="container mx-auto px-4">
+
+          {/* Section heading */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '1.5rem', marginTop: '-1rem' }}>
+            <h2 className={inter.className} style={{ fontSize: '1.4rem', fontWeight: 700, color: '#111', whiteSpace: 'nowrap' }}>
+              {selectedMealType.charAt(0) + selectedMealType.slice(1).toLowerCase()} Menu
+              {canOrder && <span style={{ fontSize: '0.9rem', color: '#16a34a', fontWeight: 600, marginLeft: '10px' }}>(Available to order now)</span>}
+            </h2>
+            <div style={{ height: '1px', flex: 1, background: '#e5e7eb' }}></div>
+          </div>
+
+          {!canOrder && (
+            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', padding: '16px', borderRadius: '12px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+              <div>
+                <h4 style={{ fontWeight: 700, color: '#92400e', fontSize: '0.95rem', margin: '0 0 4px 0' }}>Not Available for Ordering Right Now</h4>
+                <p style={{ margin: 0, color: '#b45309', fontSize: '0.85rem' }}>
+                  You can only place orders for {selectedMealType.toLowerCase()} between <strong>{getOrderTimeDisplay(selectedMealType)}</strong>.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {foods[selectedMealType.toLowerCase() as keyof FoodGrouped]?.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {foods[selectedMealType.toLowerCase() as keyof FoodGrouped].map((food, index) => (
+                <div
+                  key={food.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 0.06}s` }}
+                >
+                  <FoodCard 
+                    {...food} 
+                    onAddToCart={handleAddToCart} 
+                    available={canOrder} 
+                    canteenId={canteenData.id}
+                    canteenName={canteenData.name}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.4 }}>🍽️</div>
+              <p style={{ fontSize: '1rem', fontWeight: 600, color: '#6b7280' }}>No items available for this meal currently.</p>
+              <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '4px' }}>Please check back later.</p>
+            </div>
+          )}
+        </div>
+      </section>
 
     </div>
   );
 }
-

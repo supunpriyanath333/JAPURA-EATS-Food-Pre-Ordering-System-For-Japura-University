@@ -44,6 +44,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
 
+        {/* Global Dynamic Background */}
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1, background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)', overflow: 'hidden', pointerEvents: 'none' }}>
+          <div style={{
+            position: 'absolute', top: '5%', left: '10%', width: '400px', height: '400px',
+            background: 'rgba(181, 34, 34, 0.25)', 
+            filter: 'blur(100px)', borderRadius: '50%'
+          }}></div>
+          <div style={{
+            position: 'absolute', top: '20%', right: '5%', width: '500px', height: '500px',
+            background: 'rgba(245, 158, 11, 0.25)', 
+            filter: 'blur(120px)', borderRadius: '50%'
+          }}></div>
+          <div style={{
+            position: 'absolute', bottom: '10%', left: '30%', width: '600px', height: '600px',
+            background: 'rgba(59, 130, 246, 0.15)', 
+            filter: 'blur(120px)', borderRadius: '50%'
+          }}></div>
+        </div>
+
         {/* Cart Context wraps all pages */}
         <CartProvider>
           {/* Show Header ONLY on client-side user pages */}

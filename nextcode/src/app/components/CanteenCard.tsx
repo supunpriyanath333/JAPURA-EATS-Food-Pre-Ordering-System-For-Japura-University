@@ -12,9 +12,10 @@ interface CanteenCardProps {
   onViewClick?: (id: string) => void;
   className?: string;
   phone: string;
-  description: string;
   seller_email: string;
   imageUrl?: string;
+  isFavourite?: boolean;
+  onToggleFavourite?: (id: string) => void;
 }
 
 export default function CanteenCard({
@@ -27,9 +28,10 @@ export default function CanteenCard({
   className = "",
   phone,
   imageUrl,
+  isFavourite = false,
+  onToggleFavourite,
 }: CanteenCardProps) {
   const [hovered, setHovered] = useState(false);
-  const [favourite, setFavourite] = useState(false);
 
   return (
     <>
@@ -226,29 +228,32 @@ export default function CanteenCard({
 
             {/* Favourite Toggle */}
             <button
-              className={`fav-btn ${favourite ? "active" : ""}`}
-              onClick={() => setFavourite((f) => !f)}
-              title={favourite ? "Remove from Favourites" : "Add to Favourites"}
+              className={`fav-btn ${isFavourite ? "active" : ""}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavourite?.(id);
+              }}
+              title={isFavourite ? "Remove from Favourites" : "Add to Favourites"}
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 padding: "10px 13px",
-                background: favourite ? "rgba(239,68,68,0.08)" : "rgba(0,0,0,0.04)",
-                border: `1.5px solid ${favourite ? "rgba(239,68,68,0.35)" : "rgba(0,0,0,0.1)"}`,
+                background: isFavourite ? "rgba(239,68,68,0.08)" : "rgba(0,0,0,0.04)",
+                border: `1.5px solid ${isFavourite ? "rgba(239,68,68,0.35)" : "rgba(0,0,0,0.1)"}`,
                 borderRadius: "12px",
                 cursor: "pointer",
                 flexShrink: 0,
                 transition: "all 0.2s ease",
               }}
-              aria-label={favourite ? "Remove from Favourites" : "Add to Favourites"}
+              aria-label={isFavourite ? "Remove from Favourites" : "Add to Favourites"}
             >
               <svg
                 className="fav-icon"
                 width="17" height="17"
                 viewBox="0 0 24 24"
-                fill={favourite ? "#ef4444" : "none"}
-                stroke={favourite ? "#ef4444" : "#aaa"}
+                fill={isFavourite ? "#ef4444" : "none"}
+                stroke={isFavourite ? "#ef4444" : "#aaa"}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -21,7 +21,7 @@ export default function FoodModal() {
     return null; // Don't render if no food is selected
   }
 
-  const { id, name, description, price, image, currency = "LKR", available = true } = selectedFoodForModal;
+  const { id, name, description, price, image, currency = "LKR", available = true, canteenId = "unknown", canteenName = "Unknown Canteen" } = selectedFoodForModal;
 
   const handleConfirmAddToCart = (e: React.MouseEvent) => {
     if (!available) return;
@@ -75,7 +75,9 @@ export default function FoodModal() {
       price, 
       image, 
       quantity,
-      specialInstructions: instructions.trim() !== "" ? instructions.trim() : undefined
+      specialInstructions: instructions.trim() !== "" ? instructions.trim() : undefined,
+      canteenId,
+      canteenName
     });
 
     closeFoodModal();
