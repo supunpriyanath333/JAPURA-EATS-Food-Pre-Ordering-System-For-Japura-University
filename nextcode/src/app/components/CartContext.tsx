@@ -71,13 +71,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const addToCart = (item: CartItem) => {
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      // Create a unique ID for the cart item based on original ID + special instructions
+      const uniqueId = item.specialInstructions 
+        ? `${item.id}-${item.specialInstructions}`
+        : item.id;
+        
+      const existing = prev.find((i) => i.id === uniqueId);
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === uniqueId ? { ...i, quantity: i.quantity + item.quantity } : i
         );
       } else {
-        return [...prev, { ...item, quantity: 1 }];
+        return [...prev, { ...item, id: uniqueId, quantity: item.quantity }];
       }
     });
     showToast(`Added ${item.name} to cart!`);

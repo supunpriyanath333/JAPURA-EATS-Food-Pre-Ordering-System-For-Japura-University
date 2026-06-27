@@ -15,57 +15,67 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAdminRoute = pathname.startsWith("/admin"); // detect admin pages
+  const isAdminRoute = pathname.startsWith("/admin");
 
   const [user, setUser] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /** HANDLE USER SESSION FOR CLIENT SIDE ONLY (NON-ADMIN) */
   useEffect(() => {
     if (isAdminRoute) {
-      // Admin pages never auto-open user login modal
       setIsModalOpen(false);
       return;
     }
 
-    // USER ROUTE LOGIN CHECK
     const sessionStr = localStorage.getItem("supabase_session");
-
     if (sessionStr) {
       const session = JSON.parse(sessionStr);
       setUser(session.user);
-      setIsModalOpen(false);     // hide modal if logged in
+      setIsModalOpen(false);
     } else {
-      setIsModalOpen(true);      // always show modal for guests
+      setIsModalOpen(true);
     }
   }, [pathname, isAdminRoute]);
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      {/*
+        ✅ FIX 1: body MUST be bg-transparent
+           backdrop-blur / backdrop-filter only works when the element behind it
+           is NOT opaque. Default <body> is white (opaque), which blocks blur entirely.
+           Setting bg-transparent lets the fixed background div show through.
+      */}
+      <body className={`${inter.className} bg-transparent`}>
 
-        {/* Global Dynamic Background */}
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: -1, background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)', overflow: 'hidden', pointerEvents: 'none' }}>
+        {/* Global Dynamic Background — fixed, behind everything */}
+        <div style={{
+          position: 'fixed', top: 0, left: 0,
+          width: '100vw', height: '100vh',
+          zIndex: -1,
+          background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+        }}>
           <div style={{
-            position: 'absolute', top: '5%', left: '10%', width: '400px', height: '400px',
-            background: 'rgba(181, 34, 34, 0.25)', 
-            filter: 'blur(100px)', borderRadius: '50%'
-          }}></div>
+            position: 'absolute', top: '5%', left: '10%',
+            width: '400px', height: '400px',
+            background: 'rgba(181, 34, 34, 0.25)',
+            filter: 'blur(100px)', borderRadius: '50%',
+          }} />
           <div style={{
-            position: 'absolute', top: '20%', right: '5%', width: '500px', height: '500px',
-            background: 'rgba(245, 158, 11, 0.25)', 
-            filter: 'blur(120px)', borderRadius: '50%'
-          }}></div>
+            position: 'absolute', top: '20%', right: '5%',
+            width: '500px', height: '500px',
+            background: 'rgba(245, 158, 11, 0.25)',
+            filter: 'blur(120px)', borderRadius: '50%',
+          }} />
           <div style={{
-            position: 'absolute', bottom: '10%', left: '30%', width: '600px', height: '600px',
-            background: 'rgba(59, 130, 246, 0.15)', 
-            filter: 'blur(120px)', borderRadius: '50%'
-          }}></div>
+            position: 'absolute', bottom: '10%', left: '30%',
+            width: '600px', height: '600px',
+            background: 'rgba(59, 130, 246, 0.15)',
+            filter: 'blur(120px)', borderRadius: '50%',
+          }} />
         </div>
 
-        {/* Cart Context wraps all pages */}
         <CartProvider>
-          {/* Show Header ONLY on client-side user pages */}
           {!isAdminRoute && (
             <Header
               user={user}
@@ -74,19 +84,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               setIsModalOpen={setIsModalOpen}
             />
           )}
-          {children}
-          {/* Global Food Modal */}
+
+          {/*
+            ✅ FIX 2: main wrapper gives correct top padding for fixed header.
+               Without this, page content starts at y=0 (behind the navbar).
+               pt-16 = 64px — adjust to match your Header height if different.
+          */}
+          <main className={!isAdminRoute ? "pt-16" : ""}>
+            {children}
+          </main>
+
           <FoodModal />
         </CartProvider>
 
-        {/* User Login Modal -> ONLY on user pages */}
         {!isAdminRoute && isModalOpen && (
           <LoginModal
             isOpen={true}
             onClose={() => {
-              // disable closing unless a session exists
               const sessionStr = localStorage.getItem("supabase_session");
-              if (!sessionStr) return; 
+              if (!sessionStr) return;
               setIsModalOpen(false);
             }}
             setUser={(user: any) => {

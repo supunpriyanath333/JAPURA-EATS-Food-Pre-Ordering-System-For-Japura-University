@@ -10,6 +10,7 @@ export { default as CanteenCard } from "./CanteenCard";
 export { default as FoodCard } from "./FoodCard";
 export { default as PromoBanner } from "./PromoBanner";
 export { default as Footer } from "./Footer";
+export { default as CartItemCard } from "./CartItemCard";
 
 
 
