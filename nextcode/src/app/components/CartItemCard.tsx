@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CartItem } from "./CartContext";
+import { CartItem, useCart } from "./CartContext";
 
 interface CartItemCardProps {
   item: CartItem;
@@ -12,6 +12,19 @@ interface CartItemCardProps {
 
 export default function CartItemCard({ item, onIncrease, onDecrease, onRemove }: CartItemCardProps) {
   const [showConfirm, setShowConfirm] = useState(false);
+  const { openFoodModal } = useCart();
+
+  const handleOpenModal = () => {
+    openFoodModal({
+      id: item.id.split('-')[0], // Use base ID if appended
+      name: item.name,
+      description: item.specialInstructions ? `Instructions: ${item.specialInstructions}` : "",
+      price: item.price,
+      image: item.image,
+      canteenId: item.canteenId,
+      canteenName: item.canteenName,
+    });
+  };
 
   const handleDecrease = () => {
     if (item.quantity <= 1) {
@@ -22,28 +35,33 @@ export default function CartItemCard({ item, onIncrease, onDecrease, onRemove }:
   };
 
   return (
-    <div className="bg-white/30 backdrop-blur-lg rounded-2xl border border-white/50 shadow-sm !flex !flex-row !items-stretch !p-3 !gap-4 !w-full relative transition-all hover:bg-white/40">
+    <div className="bg-white/30 backdrop-blur-lg rounded-2xl border border-white/50 shadow-sm !flex !flex-row !items-stretch !p-3 !gap-4 !w-full relative transition-all hover:bg-white/40 group">
 
       {/* Image */}
-      <div className="!w-[75px] !h-[75px] rounded-xl overflow-hidden shrink-0 bg-white/40">
+      <div 
+        onClick={handleOpenModal}
+        className="!w-[85px] !h-[85px] !-my-1 !-ml-1 rounded-xl overflow-hidden shrink-0 bg-white/40 !cursor-pointer"
+      >
         <img
           src={item.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&auto=format&fit=crop"}
           alt={item.name}
-          className="!w-full !h-full object-cover"
+          className="!w-full !h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
       </div>
 
       {/* Text Details */}
-      <div className="!flex-1 !flex !flex-col !justify-center min-w-0">
-        <h3 className="font-bold text-gray-900 text-[16px] truncate !m-0">{item.name}</h3>
-        {item.specialInstructions && (
-          <p className="text-[12px] text-gray-600 font-medium !mt-0.5 !mb-0 line-clamp-2">
-            Instructions : {item.specialInstructions}
+      <div className="!flex-1 !flex !flex-col !justify-center min-w-0 !items-start">
+        <div onClick={handleOpenModal} className="!cursor-pointer !flex !flex-col !max-w-full">
+          <h3 className="font-bold text-gray-900 text-[16px] truncate !m-0 group-hover:text-[#B52222] transition-colors">{item.name}</h3>
+          {item.specialInstructions && (
+            <p className="text-[12px] text-gray-600 font-medium !mt-0.5 !mb-0 line-clamp-2">
+              Instructions : {item.specialInstructions}
+            </p>
+          )}
+          <p className="text-gray-900 font-extrabold text-[14px] !mt-1 !mb-0">
+            LKR. {item.price.toFixed(0)} &times; {item.quantity}
           </p>
-        )}
-        <p className="text-gray-900 font-extrabold text-[14px] !mt-1 !mb-0">
-          LKR. {item.price.toFixed(0)} &times; {item.quantity}
-        </p>
+        </div>
       </div>
 
       {/* Controls */}

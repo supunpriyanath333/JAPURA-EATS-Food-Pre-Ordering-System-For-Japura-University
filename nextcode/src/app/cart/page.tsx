@@ -75,7 +75,17 @@ export default function CartPage() {
 
                 {/* Canteen Header */}
                 <div className="!flex !items-center !justify-between !mb-5 !w-full border-b border-white/50 !pb-4">
-                  <h2 className="text-xl font-extrabold text-gray-900 !m-0">{group.canteenName}</h2>
+                  <div
+                    onClick={() => router.push(`/canteen/${canteenId}`)}
+                    className="!flex !items-center !gap-2 !cursor-pointer group"
+                  >
+                    <h2 className="text-xl font-extrabold text-gray-900 group-hover:text-[#B52222] transition-colors !m-0">
+                      {group.canteenName}
+                    </h2>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-[#B52222] group-hover:translate-x-1 transition-all">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </div>
                   <span className="text-[#B52222] font-bold text-[14px]">
                     {group.items.length} {group.items.length === 1 ? "Item" : "Items"}
                   </span>
@@ -95,7 +105,7 @@ export default function CartPage() {
                 </div>
 
                 {/* Footer */}
-                <div className="!flex !flex-row !items-end !justify-between !pt-5 border-t border-gray-300/50 !w-full !gap-4">
+                <div className="!flex !flex-row !items-end !justify-between !pt-5 border-t border-white/50 !w-full !gap-4">
                   <div className="!flex !flex-col">
                     <span className="text-[12px] text-gray-500 font-bold uppercase tracking-widest !mb-1">SUB TOTAL</span>
                     <span className="text-[24px] font-extrabold text-gray-900 leading-none !m-0">LKR {group.subtotal.toFixed(2)}</span>
