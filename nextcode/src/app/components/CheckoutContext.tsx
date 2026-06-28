@@ -6,6 +6,8 @@ interface CheckoutContextType {
   setSelectedTimeSlot: (slot: string) => void;
   selectedPaymentMethod: 'card' | 'cash';
   setSelectedPaymentMethod: (method: 'card' | 'cash') => void;
+  diningOption: 'Dine-in' | 'Takeaway';
+  setDiningOption: (option: 'Dine-in' | 'Takeaway') => void;
 }
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
@@ -13,13 +15,16 @@ const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined
 export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('07.45 AM - 08.00 AM');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'cash'>('cash');
+  const [diningOption, setDiningOption] = useState<'Dine-in' | 'Takeaway'>('Takeaway');
 
   return (
     <CheckoutContext.Provider value={{ 
       selectedTimeSlot, 
       setSelectedTimeSlot, 
       selectedPaymentMethod, 
-      setSelectedPaymentMethod 
+      setSelectedPaymentMethod,
+      diningOption,
+      setDiningOption
     }}>
       {children}
     </CheckoutContext.Provider>

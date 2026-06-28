@@ -5,11 +5,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const { user_id, pickup_time, payment_method, client_total, cart_items } = body;
+    const { user_id, pickup_time, payment_method, dining_option, client_total, cart_items } = body;
 
     if (!user_id || !pickup_time || !payment_method || !client_total) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    // Capitalize payment_method to satisfy DB check constraint ('cash' -> 'Cash', 'card' -> 'Card')
+    const db_payment_method = payment_method.charAt(0).toUpperCase() + payment_method.slice(1).toLowerCase();
 
     const supabase = supabaseServer();
 
@@ -19,7 +22,7 @@ export async function POST(req: NextRequest) {
       .insert({
         user_id,
         pickup_time,
-        payment_method,
+        payment_method: db_payment_method,
         total_amount: client_total
       })
       .select()

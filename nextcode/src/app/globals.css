@@ -323,3 +323,23 @@ h6 {
 .stagger-4 {
   animation-delay: 0.4s;
 }
+
+@keyframes arrowStretch {
+  0% { transform: scaleX(0.4); transform-origin: left; opacity: 0.5; }
+  50% { transform: scaleX(1); transform-origin: left; opacity: 1; }
+  100% { transform: scaleX(0.4); transform-origin: left; opacity: 0.5; }
+}
+
+@keyframes arrowSlide {
+  0% { transform: translateX(-10px); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(-10px); }
+}
+
+.animate-arrow-stretch {
+  animation: arrowStretch 1.5s ease-in-out infinite;
+}
+
+.animate-arrow-slide {
+  animation: arrowSlide 1.5s ease-in-out infinite;
+}

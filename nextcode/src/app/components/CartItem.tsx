@@ -1,6 +1,5 @@
-// src/app/checkout/components/CartItem.tsx
 import React from 'react';
-import { Minus, Plus, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useCart } from './CartContext';
 
 interface CartItemProps {
@@ -12,109 +11,58 @@ interface CartItemProps {
   imageSrc: string;
 }
 
-const CartItem: React.FC<CartItemProps> = ({id, name, price, quantity, canteen="", imageSrc="" }) => {
-  const RED_COLOR = '#B52222';
+const CartItem: React.FC<CartItemProps> = ({ id, name, price, quantity, canteen = "", imageSrc = "" }) => {
   const { removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
 
-  // Handlers for buttons
-  const handleRemove = () => removeFromCart(id);
-  const handleIncrease = () => increaseQuantity(id);
-  const handleDecrease = () => decreaseQuantity(id);
-
   return (
-    <div 
-      // Main container: Image and details stack vertically on small screens, align horizontally on medium screens and up.
-      className="flex flex-col md:flex-row items-start md:items-center space-x-4 border-b last:border-b-0" 
-      style={{ padding: '1rem 0' }} 
-    >
-      {/* Image and Details Container */}
-      <div className="flex items-start flex-grow">
-        {/* Image */}
-        <div 
-          className="w-20 h-20 flex-shrink-0 rounded overflow-hidden shadow-sm" 
-          style={{ width: '5rem', height: '5rem', marginRight: '1rem' }}
-        >
-          <img src={imageSrc} alt={name} className="w-full h-full object-cover" />
+    <div className="!flex !items-center !justify-between !bg-white/60 !backdrop-blur-md !rounded-2xl !border !border-gray-200/60 !shadow-sm !p-3 !w-full !transition-all hover:!bg-white/80">
+      
+      {/* Left side: Image and Details */}
+      <div className="!flex !items-center !gap-3 sm:!gap-4 !flex-1 !min-w-0">
+        <div className="!w-[65px] !h-[65px] sm:!w-[75px] sm:!h-[75px] !rounded-xl !overflow-hidden !shrink-0 !bg-gray-100">
+          <img src={imageSrc} alt={name} className="!w-full !h-full !object-cover" />
         </div>
-
-        {/* Details */}
-        <div style={{ paddingRight: '1rem' }}> 
-          <h4 className="font-semibold text-gray-800">{name}</h4>
-          <p className="text-sm text-gray-500">{canteen}</p>
+        
+        <div className="!flex !flex-col !justify-center !min-w-0">
+          <h4 className="!font-bold !text-gray-900 !text-[15px] !truncate !m-0">{name}</h4>
+          <p className="!text-[12px] !text-gray-500 !font-medium !mt-0.5 !mb-0 !truncate">{canteen}</p>
+          <div className="!text-[14px] !font-extrabold !text-gray-900 !mt-1 sm:hidden">
+            Rs. {(price * quantity).toFixed(2)}
+          </div>
         </div>
       </div>
 
-
-      {/* Price and Quantity Controls */}
-      {/* This section is the most critical for responsiveness.
-        - On mobile (default): It takes full width, and its contents (Price and Controls) align vertically.
-        - On medium screens (md:): It switches to horizontal alignment (md:flex-row) and justifies space.
-      */}
-      <div 
-        className="flex flex-col md:flex-row md:items-center w-full md:w-auto"
-        style={{ 
-            marginTop: '1rem', // Space below details on mobile
-            gap: '1rem' // Default vertical gap between Price and Controls on mobile
-        }}
-      >
-        {/* Price and Trash (Visible on Mobile/Tablet) */}
-        <div className="flex justify-between items-center w-full md:hidden">
-            <span className="text-lg font-semibold text-gray-800">Rs. {price.toFixed(2)}</span>
-            
-            {/* Delete Button (Mobile) */}
-            <button 
-              onClick={handleRemove}
-              className="text-gray-500 hover:text-red-600 transition-colors"
-              style={{ color: RED_COLOR }}
-              aria-label="Remove item"
-            >
-              <Trash2 size={20} />
-            </button>
+      {/* Right side: Price and Controls */}
+      <div className="!flex !items-center !gap-3 sm:!gap-5 !shrink-0">
+        <div className="hidden sm:!block !text-[15px] !font-extrabold !text-gray-900">
+          Rs. {(price * quantity).toFixed(2)}
         </div>
-
-        {/* Price (Hidden on Mobile, Visible on Desktop) */}
-        <span className="text-lg font-semibold text-gray-800 hidden md:block" style={{ marginRight: '1.5rem' }}>Rs. {price.toFixed(2)}</span>
 
         {/* Quantity Controls */}
-        <div className="flex items-center border border-gray-300 rounded-md mx-auto md:mx-0">
-          
-          {/* Minus Button */}
+        <div className="!flex !items-center !bg-white !border !border-gray-200 !rounded-full !px-2 !py-1 !shadow-sm !gap-2">
           <button 
-            onClick={handleDecrease}
-            className="text-gray-600 hover:bg-gray-100 transition-colors"
-            style={{ padding: '0.5rem 0.6rem' }} 
-            aria-label="Decrease quantity"
+            onClick={() => decreaseQuantity(id)}
+            className="!text-gray-600 hover:!text-[#B52222] !font-bold !px-1 sm:!px-1.5 !cursor-pointer !border-none !bg-transparent"
           >
-            <Minus size={16} />
+            &minus;
           </button>
-          
-          {/* Quantity Display */}
-          <span 
-            className="font-medium text-gray-800 select-none border-l border-r border-gray-300"
-            style={{ padding: '0.25rem 0.75rem' }} 
-          >
+          <span className="!font-bold !text-[13px] !text-gray-900 !w-4 !text-center !select-none !m-0">
             {quantity}
           </span>
-
-          {/* Plus Button */}
           <button 
-            onClick={handleIncrease}
-            className="text-gray-600 hover:bg-gray-100 transition-colors"
-            style={{ padding: '0.5rem 0.6rem' }}
-            aria-label="Increase quantity"
+            onClick={() => increaseQuantity(id)}
+            className="!text-gray-600 hover:!text-[#B52222] !font-bold !px-1 sm:!px-1.5 !cursor-pointer !border-none !bg-transparent"
           >
-            <Plus size={16} />
+            +
           </button>
         </div>
-        
-        {/* Delete Button (Desktop - Hidden on Mobile) */}
+
+        {/* Delete Button */}
         <button 
-            onClick={handleRemove}
-            className="text-gray-500 hover:text-red-600 transition-colors hidden md:block"
-            style={{ color: RED_COLOR, marginLeft: '1rem' }} 
-            aria-label="Remove item"
+          onClick={() => removeFromCart(id)}
+          className="!w-8 !h-8 !flex !items-center !justify-center !text-gray-400 hover:!text-[#B52222] hover:!bg-red-50 !rounded-full !transition-colors !cursor-pointer !border-none !bg-transparent"
         >
-            <Trash2 size={20} />
+          <Trash2 size={18} strokeWidth={2.5} />
         </button>
       </div>
     </div>
