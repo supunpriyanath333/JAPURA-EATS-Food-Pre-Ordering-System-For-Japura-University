@@ -20,8 +20,12 @@ const formatOrders = (rawOrders: any[]): Order[] => {
     return rawOrders.map((order: any) => {
         
         const firstOrderItem = order.order_items[0];
-        const canteenName = firstOrderItem?.food_items?.[0]?.canteens?.[0]?.name || "Unknown Canteen";
-        const canteenId = firstOrderItem?.food_items?.[0]?.canteens?.[0]?.id;
+        const foodItem = firstOrderItem?.food_items;
+        const canteen = Array.isArray(foodItem) ? foodItem[0]?.canteens : foodItem?.canteens;
+        const actualCanteen = Array.isArray(canteen) ? canteen[0] : canteen;
+        
+        const canteenName = actualCanteen?.name || "Unknown Canteen";
+        const canteenId = actualCanteen?.id;
 
         const items: OrderItem[] = (order.order_items || []).map((oi: any) => ({
             quantity: oi.quantity,
@@ -48,11 +52,13 @@ const formatOrders = (rawOrders: any[]): Order[] => {
         
         return {
             id: order.id.substring(0, 8).toUpperCase(),
+            dbId: order.id,
             canteenName: canteenName,
             canteenId: canteenId,
             date: date,
             time: time,
             status: statusList,
+            rawStatus: dbStatus,
             otp: isHistoryStatus ? undefined : (order.otp || '****'), 
             items: items,
             total: Number(order.total_amount),
@@ -61,6 +67,8 @@ const formatOrders = (rawOrders: any[]): Order[] => {
             diningOption: diningOption,
             isPickedUp: isHistoryStatus,
             feedback: undefined,
+            createdAt: order.created_at,
+            refundEligible: order.refund_eligible,
         };
     });
 };
@@ -76,8 +84,8 @@ export default function OrdersPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     // FIX: Wrap fetchOrders in useCallback for stable dependency in useEffect
-    const fetchOrders = useCallback(async () => {
-        setIsLoading(true);
+    const fetchOrders = useCallback(async (showLoader = true) => {
+        if (showLoader) setIsLoading(true);
         try {
             // 1. Get the stored session and extract the email
             const sessionString = localStorage.getItem("supabase_session"); 
@@ -131,13 +139,12 @@ export default function OrdersPage() {
         }
     }, []);
     
-    // Run on mount
-    useEffect(() => {
-        fetchOrders();
-        // 🎯 FIX: Implement Polling
-        const intervalId = setInterval(() => {
-          console.log("Polling for order status updates...");
-          fetchOrders();
+    // Run on mount
+    useEffect(() => {
+        fetchOrders(true);
+        // 🎯 FIX: Implement Polling
+        const intervalId = setInterval(() => {
+          fetchOrders(false);
         }, 10000);
         
         // Clean up the interval when the component unmounts
@@ -146,7 +153,7 @@ export default function OrdersPage() {
     
     // Filter orders based on the selected tab
     const filteredOrders = (allOrders || []).filter(order => {
-        const isHistory = order.isPickedUp || order.status.includes("Picked up");
+        const isHistory = order.isPickedUp || order.status.includes("Picked up") || order.rawStatus === 'cancelled';
 
         if (orderType === "Active Orders") {
             return !isHistory;
@@ -194,8 +201,8 @@ export default function OrdersPage() {
       {/* Header */}
 
       {/* Order Type Tabs */}
-      <section className="!pt-8 !pb-6">
-        <div className="!container !mx-auto !px-4">
+      <section className="!pt-8 !pb-6" style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
+        <div className="container mx-auto max-w-7xl">
           <div className="!flex !justify-center">
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px',
@@ -255,8 +262,8 @@ export default function OrdersPage() {
       </section>
 
       {/* Orders List */}
-      <section className="!px-4">
-        <div className="!container !mx-auto !max-w-4xl">
+      <section style={{ paddingLeft: '2rem', paddingRight: '2rem' }}>
+        <div className="container mx-auto max-w-7xl flex flex-col gap-6">
           {isLoading ? (
                 <div className={`!text-center !py-12 ${inter.className}`}>
                     <p className="!text-gray-600 !text-lg !font-medium">Loading orders...</p>

@@ -77,6 +77,7 @@ export async function GET(req: NextRequest) {
                 payment_method,
                 created_at,
                 status,
+                otp,
                 order_items (name, quantity, price)
             `)
             .in("id", Array.from(orderIds))
@@ -95,8 +96,9 @@ export async function GET(req: NextRequest) {
 
             return {
                 id: order.id,
-                // MOCK OTP as requested
-                opt: "1234", 
+                // Using real OTP if exists, fallback to '****'
+                otp: order.otp || "****",
+                opt: order.otp || "****", 
                 // FIX 1: Map the DB status string to the defined Frontend type (accepted, preparing, ready, picked_up)
                 status: mapStatusToFrontend(rawStatus), 
                 // FIX 2: Use Number() on the total_amount (which is numeric/string from DB)

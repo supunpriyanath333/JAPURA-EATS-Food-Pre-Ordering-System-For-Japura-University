@@ -17,13 +17,15 @@ export async function POST(req: NextRequest) {
     const supabase = supabaseServer();
 
     // 1️⃣ Create order
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
         user_id,
         pickup_time,
         payment_method: db_payment_method,
-        total_amount: client_total
+        total_amount: client_total,
+        otp
       })
       .select()
       .single();
