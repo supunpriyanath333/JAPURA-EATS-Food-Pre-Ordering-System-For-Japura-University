@@ -46,6 +46,12 @@ export interface Order {
 
 export default function OrderCard({ order, isHistory = false }: { order: Order; isHistory?: boolean }) {
   const [isCancelling, setIsCancelling] = React.useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = React.useState(false);
+  const [feedbackStep, setFeedbackStep] = React.useState<1 | 2>(1);
+  const [hoveredStar, setHoveredStar] = React.useState(0);
+  const [selectedStar, setSelectedStar] = React.useState(0);
+  const [itemRatings, setItemRatings] = React.useState<Record<number, number>>({});
+  const [hoveredItemStar, setHoveredItemStar] = React.useState<{ index: number, star: number } | null>(null);
   const statusSteps: OrderStatus[] = ["Order Accepted", "Preparing", "Ready to Pick up", "Picked up"];
   const currentStatusIndex = statusSteps.findIndex(
     (step) => step === order.status[order.status.length - 1]
@@ -282,7 +288,7 @@ export default function OrderCard({ order, isHistory = false }: { order: Order; 
             <button
               onClick={handleCancelOrder}
               disabled={isCancelling}
-              className={`${inter.className} !w-full !bg-white !text-red-600 !border-2 !border-red-600 !font-semibold !rounded-xl !py-3
+              className={`${inter.className} !w-full !bg-white !text-red-600 !border-1 !border-red-600 !font-semibold !rounded-xl !py-3
                         hover:!bg-red-50 active:!scale-[0.98] !transition-all !duration-200 !text-center disabled:!opacity-50 !cursor-pointer disabled:!cursor-not-allowed`}
             >
               {isCancelling ? 'Cancelling...' : 'Cancel Order'}
@@ -301,35 +307,36 @@ export default function OrderCard({ order, isHistory = false }: { order: Order; 
       {isHistory && (
         <div className="!mt-5 !mb-2 !flex !items-stretch !justify-between !gap-4">
           {/* Feedback Box */}
-          <div className="!flex-1 !bg-gray-100 !border !border-gray-300 !rounded-lg !px-3 !py-2">
+          <div className="!flex-1 !bg-gray-100 !border !border-gray-300 !rounded-xl !px-3 !py-2 !flex !flex-col !justify-center !overflow-hidden">
             {order.feedback ? (
-              <div className="!flex !flex-col !gap-1 !py-0">
-                {/* Stars */}
-                <div className="!flex !items-center !gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                      key={star}
-                      className={`!w-5 !h-5 ${star <= order.feedback!.rating
-                        ? "!fill-yellow-400 !text-yellow-400"
-                        : "!fill-gray-300 !text-gray-300"
-                        }`}
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-
-                {/* Comment */}
-                {order.feedback.comment && (
-                  <p className={`${inter.className} !text-sm !text-gray-700`}>
-                    {order.feedback.comment}
-                  </p>
-                )}
+              <div className="!flex !items-center !justify-center !gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <svg
+                    key={star}
+                    className={`!w-5 !h-5 ${star <= order.feedback!.rating
+                      ? "!fill-yellow-400 !text-yellow-400"
+                      : "!fill-gray-300 !text-gray-300"
+                      }`}
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
               </div>
             ) : (
               // No feedback yet
-              <div className="!flex !items-center !gap-2 !py-1 !justify-center">
+              <div
+                className={`!flex !items-center !gap-2 !py-1 !justify-center ${
+                  order.rawStatus !== 'cancelled' 
+                    ? '!cursor-pointer hover:!opacity-70 !transition-opacity' 
+                    : '!cursor-not-allowed !opacity-50'
+                }`}
+                onClick={() => {
+                  if (order.rawStatus !== 'cancelled') {
+                    setIsFeedbackModalOpen(true);
+                  }
+                }}
+              >
                 <svg
                   className="!w-5 !h-5 !text-gray-400"
                   fill="none"
@@ -354,11 +361,127 @@ export default function OrderCard({ order, isHistory = false }: { order: Order; 
           {/* Order Again Button */}
           <button
             onClick={handleOrderAgain}
-            className={`${inter.className} !bg-[#B52222] !text-white !font-semibold !rounded-lg !px-20 !py-2.5
+            className={`${inter.className} !bg-[#B52222] !text-white !font-semibold !rounded-xl !px-20 !py-3
                       hover:!bg-[#9a1e1e] active:!scale-[0.98] !transition-all !duration-200 !text-center !cursor-pointer`}
           >
             Order Again
           </button>
+        </div>
+      )}
+
+      {/* Feedback Modal Popup */}
+      {isFeedbackModalOpen && (
+        <div className="!fixed !inset-0 !z-[100] !flex !items-center !justify-center !bg-black/50 !backdrop-blur-sm !p-4">
+          <div className="!bg-white !rounded-[24px] !shadow-[0_20px_40px_rgba(0,0,0,0.2)] !p-8 !w-full !max-w-[380px] !transform !transition-all !text-center">
+
+            {feedbackStep === 1 ? (
+              <>
+                <h3 className={`${inter.className} !text-[1.35rem] !font-[800] !text-[#1a1a1a] !mb-2`}>
+                  Rate your order
+                </h3>
+
+                <p className={`${inter.className} !text-[0.95rem] !text-[#666666] !mb-7`}>
+                  Tap a star to rate {order.canteenName}
+                </p>
+
+                <div className="!flex !justify-center !gap-2 !mb-7">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <svg
+                      key={star}
+                      onClick={() => setSelectedStar(star)}
+                      onMouseEnter={() => setHoveredStar(star)}
+                      onMouseLeave={() => setHoveredStar(0)}
+                      className={`!w-10 !h-10 !cursor-pointer !transition-colors !duration-200 ${star <= (hoveredStar || selectedStar)
+                        ? "!text-yellow-400 !fill-yellow-400"
+                        : "!text-gray-300 !fill-gray-300 hover:!text-yellow-200 hover:!fill-yellow-200"
+                        }`}
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+
+                <div className="!flex !gap-3 !justify-center">
+                  <button
+                    onClick={() => {
+                      setIsFeedbackModalOpen(false);
+                      setSelectedStar(0);
+                    }}
+                    className={`${inter.className} !flex-1 !py-3 !bg-[#f0f0f0] hover:!bg-[#e5e5e5] !text-[#444] !font-semibold !rounded-xl !transition-colors !cursor-pointer`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => setFeedbackStep(2)}
+                    disabled={selectedStar === 0}
+                    className={`${inter.className} !flex-1 !py-3 !bg-[#B52222] hover:!bg-[#9e1c1c] !text-white !font-semibold !rounded-xl !transition-colors !cursor-pointer disabled:!opacity-50 disabled:!cursor-not-allowed`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className={`${inter.className} !text-[1.35rem] !font-[800] !text-[#1a1a1a] !mb-2`}>
+                  Rate the items from {order.canteenName}
+                </h3>
+
+                <p className={`${inter.className} !text-[0.95rem] !text-[#666666] !mb-5`}>
+                  How was the food?
+                </p>
+
+                <div className="!flex !flex-col !gap-3 !mb-7 !max-h-[220px] !overflow-y-auto !pr-1 custom-scrollbar">
+                  {order.items.map((item, index) => (
+                    <div key={index} className="!flex !flex-col !items-center !bg-gray-50 !p-3 !rounded-xl !border !border-gray-100">
+                      <p className={`${inter.className} !text-sm !font-semibold !text-gray-800 !mb-2`}>{item.name}</p>
+                      <div className="!flex !gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <svg
+                            key={star}
+                            onClick={() => setItemRatings(prev => ({ ...prev, [index]: star }))}
+                            onMouseEnter={() => setHoveredItemStar({ index, star })}
+                            onMouseLeave={() => setHoveredItemStar(null)}
+                            className={`!w-7 !h-7 !cursor-pointer !transition-colors !duration-200 ${star <= ((hoveredItemStar?.index === index ? hoveredItemStar.star : 0) || itemRatings[index] || 0)
+                              ? "!text-yellow-400 !fill-yellow-400"
+                              : "!text-gray-300 !fill-gray-300 hover:!text-yellow-200 hover:!fill-yellow-200"
+                              }`}
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="!flex !gap-3 !justify-center">
+                  <button
+                    onClick={() => {
+                      setIsFeedbackModalOpen(false);
+                      setFeedbackStep(1);
+                      setItemRatings({});
+                      setSelectedStar(0);
+                    }}
+                    className={`${inter.className} !flex-1 !py-3 !bg-[#f0f0f0] hover:!bg-[#e5e5e5] !text-[#444] !font-semibold !rounded-xl !transition-colors !cursor-pointer`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      alert(`Order Rated: ${selectedStar} stars\nItems Rated: ${JSON.stringify(itemRatings)}`);
+                      setIsFeedbackModalOpen(false);
+                      setFeedbackStep(1);
+                    }}
+                    className={`${inter.className} !flex-1 !py-3 !bg-[#B52222] hover:!bg-[#9e1c1c] !text-white !font-semibold !rounded-xl !transition-colors !cursor-pointer`}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

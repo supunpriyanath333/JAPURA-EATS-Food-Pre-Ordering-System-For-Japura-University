@@ -68,6 +68,8 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
 
   const [selectedMealType, setSelectedMealType] = useState<MealType>("BREAKFAST");
   const [currentOrderMeal, setCurrentOrderMeal] = useState<MealType>("BREAKFAST");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   // Set the meal type on mount to avoid hydration mismatch if SSR is used
   useEffect(() => {
@@ -278,7 +280,8 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
       <section style={{
         position: 'sticky', top: '70px', zIndex: 30, padding: '0 0 16px 0',
       }}>
-        <div className="container mx-auto px-4" style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="container mx-auto px-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch', gap: '16px' }}>
+          
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             background: 'rgba(255, 255, 255, 0.45)',
@@ -314,6 +317,61 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
               );
             })}
           </div>
+
+          {/* Expanding Search Bar */}
+          <div style={{
+            display: 'flex', alignItems: 'center', 
+            background: isSearchVisible ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.45)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '9999px',
+            padding: '0 16px',
+            border: '1px solid rgba(255, 255, 255, 0.8)',
+            boxShadow: '0 8px 24px rgba(31, 38, 135, 0.08)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            width: isSearchVisible ? '240px' : '56px',
+            cursor: isSearchVisible ? 'default' : 'pointer',
+            overflow: 'hidden'
+          }} onClick={() => !isSearchVisible && setIsSearchVisible(true)}>
+            <div 
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '24px', height: '24px', cursor: 'pointer', flexShrink: 0 }}
+              onClick={(e) => {
+                if (isSearchVisible) {
+                  e.stopPropagation();
+                  if (searchQuery) setSearchQuery('');
+                  else setIsSearchVisible(false);
+                }
+              }}
+            >
+              {isSearchVisible && !searchQuery ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B52222" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={isSearchVisible && searchQuery ? '#B52222' : '#6b7280'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              )}
+            </div>
+            
+            <input 
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={inter.className}
+              style={{
+                border: 'none', background: 'transparent', outline: 'none',
+                width: isSearchVisible ? '100%' : '0px',
+                opacity: isSearchVisible ? 1 : 0,
+                marginLeft: isSearchVisible ? '8px' : '0px',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                color: '#333',
+                transition: 'all 0.3s ease'
+              }}
+            />
+          </div>
         </div>
       </section>
 
@@ -342,31 +400,46 @@ export default function CanteenPage({ params }: { params: Promise<{ id: string }
             </div>
           )}
 
-          {foods[selectedMealType.toLowerCase() as keyof FoodGrouped]?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {foods[selectedMealType.toLowerCase() as keyof FoodGrouped].map((food, index) => (
-                <div
-                  key={food.id}
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 0.06}s` }}
-                >
-                  <FoodCard 
-                    {...food} 
-                    onAddToCart={handleAddToCart} 
-                    available={canOrder} 
-                    canteenId={canteenData.id}
-                    canteenName={canteenData.name}
-                  />
+          {(() => {
+            const currentFoods = foods[selectedMealType.toLowerCase() as keyof FoodGrouped] || [];
+            const filteredFoods = currentFoods.filter(food => food.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            if (filteredFoods.length > 0) {
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredFoods.map((food, index) => (
+                    <div
+                      key={food.id}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 0.06}s` }}
+                    >
+                      <FoodCard 
+                        {...food} 
+                        onAddToCart={handleAddToCart} 
+                        available={canOrder} 
+                        canteenId={canteenData.id}
+                        canteenName={canteenData.name}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '5rem 0' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.4 }}>🍽️</div>
-              <p style={{ fontSize: '1rem', fontWeight: 600, color: '#6b7280' }}>No items available for this meal currently.</p>
-              <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '4px' }}>Please check back later.</p>
-            </div>
-          )}
+              );
+            } else if (currentFoods.length > 0) {
+              return (
+                <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#6b7280' }}>No items match your search for "{searchQuery}".</p>
+                </div>
+              );
+            } else {
+              return (
+                <div style={{ textAlign: 'center', padding: '5rem 0' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '12px', opacity: 0.4 }}>🍽️</div>
+                  <p style={{ fontSize: '1rem', fontWeight: 600, color: '#6b7280' }}>No items available for this meal currently.</p>
+                  <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '4px' }}>Please check back later.</p>
+                </div>
+              );
+            }
+          })()}
         </div>
       </section>
 
