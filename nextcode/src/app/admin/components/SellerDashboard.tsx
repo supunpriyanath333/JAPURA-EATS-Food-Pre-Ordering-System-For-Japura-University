@@ -10,55 +10,26 @@ interface SellerDashboardProps {
 const SellerDashboard: React.FC<SellerDashboardProps> = ({ canteenId }) => {
     const [activeTab, setActiveTab] = useState<'orders' | 'food'>('orders');
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Tab Navigation */}
-            <div 
-                style={{ 
-                    display: 'flex', 
-                    backgroundColor: CARD_BG, 
-                    borderRadius: '0.75rem', 
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
-                    padding: '0.25rem', 
-                    maxWidth: '32rem', 
-                    margin: '0 auto', 
-                    border: `1px solid ${GRAY_BORDER}` 
-                }}
-            >
+        <div className="!animate-fade-in-up !relative !flex !flex-col !gap-8">
+            {/* Tab Navigation - Glassmorphism */}
+            <div className="!flex !bg-white/60 !backdrop-blur-xl !rounded-2xl !shadow-[0_4px_20px_rgb(0,0,0,0.03)] !p-1.5 !max-w-2xl !mx-auto !border !border-white/60 !w-full">
                 <button
                     onClick={() => setActiveTab('orders')}
-                    style={{
-                        flex: 1, 
-                        paddingTop: '0.75rem', 
-                        paddingBottom: '0.75rem', 
-                        fontWeight: 'bold', 
-                        borderRadius: '0.5rem', 
-                        transition: 'all 0.2s', 
-                        fontSize: '1rem',
-                        border: 'none',
-                        cursor: 'pointer',
-                        backgroundColor: activeTab === 'orders' ? '#FEF2F2' : 'transparent', // Red 50
-                        color: activeTab === 'orders' ? PRIMARY_TEXT : SECONDARY_TEXT,
-                        boxShadow: activeTab === 'orders' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
-                    }}
+                    className={`!flex-1 !py-3 !px-4 !font-black !rounded-xl !transition-all !duration-300 !text-sm md:!text-base !border ${
+                        activeTab === 'orders' 
+                            ? '!bg-gradient-to-r !from-[#B52222]/90 !to-[#8a1919]/90 !text-white !shadow-[0_4px_15px_rgba(181,34,34,0.2)] !border-red-400/30' 
+                            : '!bg-transparent !text-gray-500 hover:!text-gray-700 hover:!bg-white/50 !border-transparent'
+                    }`}
                 >
                     Order Management
                 </button>
                 <button
                     onClick={() => setActiveTab('food')}
-                    style={{
-                        flex: 1, 
-                        paddingTop: '0.75rem', 
-                        paddingBottom: '0.75rem', 
-                        fontWeight: 'bold', 
-                        borderRadius: '0.5rem', 
-                        transition: 'all 0.2s', 
-                        fontSize: '1rem',
-                        border: 'none',
-                        cursor: 'pointer',
-                        backgroundColor: activeTab === 'food' ? '#FEF2F2' : 'transparent', // Red 50
-                        color: activeTab === 'food' ? PRIMARY_TEXT : SECONDARY_TEXT,
-                        boxShadow: activeTab === 'food' ? '0 1px 2px 0 rgba(0, 0, 0, 0.05)' : 'none',
-                    }}
+                    className={`!flex-1 !py-3 !px-4 !font-black !rounded-xl !transition-all !duration-300 !text-sm md:!text-base !border ${
+                        activeTab === 'food' 
+                            ? '!bg-gradient-to-r !from-[#B52222]/90 !to-[#8a1919]/90 !text-white !shadow-[0_4px_15px_rgba(181,34,34,0.2)] !border-red-400/30' 
+                            : '!bg-transparent !text-gray-500 hover:!text-gray-700 hover:!bg-white/50 !border-transparent'
+                    }`}
                 >
                     Food Item Management
                 </button>

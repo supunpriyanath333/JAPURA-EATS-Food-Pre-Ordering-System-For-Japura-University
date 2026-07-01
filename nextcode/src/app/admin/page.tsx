@@ -101,53 +101,59 @@ const AdminDashboard: React.FC = () => {
         ];
 
         return (
-            <div className="!min-h-screen !bg-[#f8f9fc] !font-sans !flex !relative !overflow-hidden">
+            <div className="!h-screen !bg-[#f8f9fc] !font-sans !flex !relative !overflow-hidden">
                 {/* Decorative background blobs to make glassmorphism pop */}
                 <div className="!absolute !top-[-10%] !left-[-10%] !w-[50vw] !h-[50vw] !bg-red-200/40 !rounded-full !blur-[120px] !pointer-events-none !z-0"></div>
                 <div className="!absolute !bottom-[-10%] !right-[-5%] !w-[40vw] !h-[40vw] !bg-blue-200/40 !rounded-full !blur-[120px] !pointer-events-none !z-0"></div>
                 <div className="!absolute !top-[30%] !right-[15%] !w-[30vw] !h-[30vw] !bg-yellow-200/20 !rounded-full !blur-[100px] !pointer-events-none !z-0"></div>
                 
-                {/* Sidebar */}
-                <div className="!w-64 !bg-white !border-r !border-gray-200 !shadow-sm !flex !flex-col !sticky !top-0 !h-screen">
-                    <div className="!p-6 !border-b !border-gray-100">
+                {/* Sidebar - Yellow Mixed Premium Glassmorphism Background Only */}
+                <div className="!w-[280px] !bg-gradient-to-b !from-yellow-50/70 !via-yellow-100/50 !to-yellow-50/60 !backdrop-blur-3xl !border-r !border-white/70 !shadow-[4px_0_40px_rgba(234,179,8,0.2)] !flex !flex-col !h-screen !relative !z-20">
+                    <div className="!absolute !top-0 !left-0 !w-full !h-full !bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] !opacity-[0.03] !pointer-events-none"></div>
+                    
+                    <div className="!p-8 !border-b !border-white/40 !relative !z-10">
                         <h1 className="!text-2xl !font-extrabold !text-[#B52222] !tracking-tight">
                             JAPURA EATS
                         </h1>
-                        <p className="!text-xs !font-bold !text-gray-400 !uppercase !tracking-wider !mt-1">Admin Portal</p>
+                        <p className="!text-xs !font-bold !text-gray-600 !uppercase !tracking-wider !mt-1">Admin Portal</p>
                     </div>
                     
-                    <div className="!flex-1 !overflow-y-auto !py-4">
-                        <nav className="!px-3 !space-y-1">
+                    <div className="!flex-1 !overflow-y-auto !py-6 !px-4 !relative !z-10 !custom-scrollbar">
+                        <nav className="!space-y-2">
                             {tabs.map(tab => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
-                                    className={`!w-full !flex !items-center !gap-3 !px-3 !py-2.5 !text-sm !font-semibold !rounded-xl !transition-all !cursor-pointer ${
+                                    className={`!w-full !flex !items-center !gap-3 !px-4 !py-3.5 !text-sm !font-black !rounded-2xl !transition-all !duration-300 !cursor-pointer !group ${
                                         activeTab === tab.id 
-                                        ? '!bg-red-50 !text-[#B52222]' 
-                                        : '!text-gray-600 hover:!bg-gray-50 hover:!text-gray-900'
+                                        ? '!bg-gradient-to-r !from-white/90 !to-white/70 !backdrop-blur-xl !text-[#B52222] !shadow-[0_8px_25px_rgba(181,34,34,0.12)] !border !border-white !scale-[1.02]' 
+                                        : '!text-gray-800 hover:!bg-white/50 hover:!backdrop-blur-md hover:!text-black !border !border-transparent hover:!border-white/60 hover:!shadow-sm'
                                     }`}
                                 >
-                                    <svg className={`!w-5 !h-5 ${activeTab === tab.id ? '!text-[#B52222]' : '!text-gray-400'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        {tab.icon}
-                                    </svg>
-                                    {tab.label}
+                                    <div className={`!p-2 !rounded-xl !transition-colors !duration-300 ${activeTab === tab.id ? '!bg-red-100 !text-[#B52222]' : '!bg-white/60 !text-gray-600 group-hover:!bg-white group-hover:!text-gray-900'}`}>
+                                        <svg className="!w-5 !h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            {tab.icon}
+                                        </svg>
+                                    </div>
+                                    <span className="!tracking-wide">{tab.label}</span>
                                 </button>
                             ))}
                         </nav>
                     </div>
 
-                    <div className="!p-4 !border-t !border-gray-100">
-                        <div className="!flex !items-center !gap-3 !px-3 !py-2 !mb-2">
-                            <div className="!w-8 !h-8 !rounded-full !bg-red-100 !flex !items-center !justify-center !text-[#B52222] !font-bold">A</div>
+                    <div className="!p-6 !border-t !border-white/40 !relative !z-10 !bg-white/30">
+                        <div className="!flex !items-center !gap-3 !mb-4 !p-3 !bg-white/70 !rounded-2xl !border !border-white/80 !shadow-sm">
+                            <div className="!w-10 !h-10 !rounded-xl !bg-red-100 !flex !items-center !justify-center !text-[#B52222] !font-black !shadow-inner">
+                                {email?.charAt(0).toUpperCase() || 'A'}
+                            </div>
                             <div className="!flex-1 !min-w-0">
-                                <p className="!text-sm !font-bold !text-gray-900 !truncate">{email}</p>
-                                <p className="!text-xs !text-gray-500">Root Admin</p>
+                                <p className="!text-sm !font-black !text-gray-900 !truncate">{email}</p>
+                                <p className="!text-[10px] !font-black !text-gray-600 !uppercase !tracking-widest !mt-0.5">Root Admin</p>
                             </div>
                         </div>
                         <button
                             onClick={handleLogout}
-                            className="!w-full !flex !items-center !justify-center !gap-2 !px-4 !py-2 !text-sm !font-bold !text-red-700 !bg-red-50 hover:!bg-red-100 !rounded-xl !transition-colors !cursor-pointer"
+                            className="!w-full !flex !items-center !justify-center !gap-2 !px-4 !py-3 !text-sm !font-black !text-red-700 !bg-white/80 hover:!bg-red-100 hover:!text-red-800 !border !border-white/80 hover:!border-red-300 !rounded-2xl !transition-all !duration-300 !cursor-pointer !shadow-sm"
                         >
                             <svg className="!w-4 !h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>

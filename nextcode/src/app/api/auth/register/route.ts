@@ -28,22 +28,59 @@ export async function POST(req: Request) {
     const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
     const password_hash = `${salt}:${derivedKey.toString("hex")}`;
 
+    // Determine ID prefix based on role for the system_id
+    let idPrefix = '';
+    if (role === 'student') {
+      idPrefix = 'ST';
+    } else if (role === 'lecturer') {
+      idPrefix = 'LC';
+    } else if (role === 'staff') {
+      idPrefix = 'SF';
+    }
+
+    // Auto-generate the custom system ID
+    let newSystemId = `${idPrefix}1000`; // Default starting ID
+    const { data: latestUser } = await supabase
+      .from('users')
+      .select('system_id')
+      .ilike('system_id', `${idPrefix}%`)
+      .order('system_id', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // If we found a recent user with this prefix, increment their ID
+    if (latestUser && latestUser.system_id) {
+      const currentIdString = latestUser.system_id as string;
+      const currentNumber = parseInt(currentIdString.replace(idPrefix, ''), 10);
+      if (!isNaN(currentNumber)) {
+        newSystemId = `${idPrefix}${currentNumber + 1}`;
+      }
+    }
+
+    // Prepare the insertion payload
+    // Note: The form now passes student_reg_no, lecture_id, etc. via ...body
+    const insertPayload: any = { role, full_name, email, mobile, password_hash, ...body };
+    delete insertPayload.password;
+    
+    // Assign the custom generated system ID
+    insertPayload.system_id = newSystemId;
+
     // Insert user into Supabase
     const { data, error } = await supabase
       .from("users")
-      .insert([{ role, full_name, email, mobile, password_hash }])
+      .insert([insertPayload])
       .select()
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", error); // <--- log the exact error
+      console.error("Supabase insert error:", error);
       return NextResponse.json(
         { message: "Failed to register user", error: error.message },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
+    return NextResponse.json({ message: "User registered successfully", system_id: newSystemId }, { status: 201 });
   } catch (err: any) {
     console.error("API error:", err);
     return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     // Select all users, excluding the password hash for security
     const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, email, mobile, role, student_reg_no, lecture_id, staff_id, faculty, position, created_at')
+        .select('id, system_id, full_name, email, mobile, role, student_reg_no, lecture_id, staff_id, faculty, position, created_at')
         .order('created_at', { ascending: false });
 
     if (error) {

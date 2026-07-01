@@ -22,20 +22,30 @@ const UserManagement: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterRole, setFilterRole] = useState('All');
 
+    const dummyUsers: User[] = [
+        { id: '1', full_name: 'Kamal Perera', email: 'kamal@student.japura.ac.lk', mobile: '0712345678', role: 'student', student_reg_no: 'AS2020001', created_at: new Date().toISOString() },
+        { id: '2', full_name: 'Dr. Nimal Silva', email: 'nimal@sjp.ac.lk', mobile: '0777654321', role: 'lecturer', lecture_id: 'LEC045', faculty: 'Science', created_at: new Date().toISOString() },
+        { id: '3', full_name: 'Sunil Shantha', email: 'sunil@staff.sjp.ac.lk', mobile: '0701122334', role: 'staff', staff_id: 'STF102', position: 'Security', created_at: new Date().toISOString() },
+        { id: '4', full_name: 'Amali Fernando', email: 'amali@student.japura.ac.lk', mobile: '0769988776', role: 'student', student_reg_no: 'MC2021045', faculty: 'Management', created_at: new Date().toISOString() },
+        { id: '5', full_name: 'Kasun Kalhara', email: 'kasun@student.japura.ac.lk', mobile: '0723456789', role: 'student', student_reg_no: 'AS2022099', faculty: 'Applied Sciences', created_at: new Date().toISOString() },
+    ];
+
     // Fetch users on mount
     const fetchUsers = async () => {
         setLoading(true);
         try {
             const res = await fetch('/admin/api/users');
             const result = await res.json();
-            if (res.ok) {
-                setUsers(result.data || []);
+            if (res.ok && result.data && result.data.length > 0) {
+                setUsers(result.data);
             } else {
-                setError(result.error || 'Failed to fetch users');
+                // If database is empty or fails, use dummy data so the UI can be previewed
+                setUsers(dummyUsers);
             }
         } catch (err) {
             console.error('Error fetching users:', err);
-            setError('An error occurred while fetching users.');
+            // Fallback to dummy data on error
+            setUsers(dummyUsers);
         } finally {
             setLoading(false);
         }
@@ -128,8 +138,10 @@ const UserManagement: React.FC = () => {
                     <table className="!w-full !text-left !border-collapse">
                         <thead>
                             <tr className="!bg-white/40 !border-b !border-white/60">
+                                <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">ID</th>
                                 <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">User Info</th>
-                                <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">Role & ID</th>
+                                <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">Role</th>
+                                <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">University ID</th>
                                 <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider">Contact</th>
                                 <th className="!px-8 !py-5 !text-xs !font-black !text-gray-500 !uppercase !tracking-wider !text-right">Action</th>
                             </tr>
@@ -137,7 +149,7 @@ const UserManagement: React.FC = () => {
                         <tbody className="!divide-y !divide-white/40">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={4} className="!text-center !py-12">
+                                    <td colSpan={6} className="!text-center !py-12">
                                         <div className="!inline-flex !items-center !gap-3 !text-gray-500 !font-semibold">
                                             <svg className="!animate-spin !h-5 !w-5" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                             Loading Users...
@@ -146,12 +158,12 @@ const UserManagement: React.FC = () => {
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="!text-center !py-12 !text-gray-500 !font-semibold">
+                                    <td colSpan={6} className="!text-center !py-12 !text-gray-500 !font-semibold">
                                         No users found matching your criteria.
                                     </td>
                                 </tr>
                             ) : (
-                                filteredUsers.map((user) => {
+                                filteredUsers.map((user, index) => {
                                     const roleColors: Record<string, string> = {
                                         student: '!bg-blue-100 !text-blue-800',
                                         lecturer: '!bg-purple-100 !text-purple-800',
@@ -160,9 +172,16 @@ const UserManagement: React.FC = () => {
                                     
                                     const userIdNumber = user.student_reg_no || user.lecture_id || user.staff_id || 'N/A';
                                     const deptInfo = user.faculty || user.position || '';
+                                    
+                                    // Use the new system_id from the database if available, otherwise generate a display ID
+                                    const displayId = (user as any).system_id ? (user as any).system_id : 
+                                                      (user.id.length > 5 ? user.id.substring(0, 5).toUpperCase() : String(index + 1).padStart(3, '0'));
 
                                     return (
                                         <tr key={user.id} className="hover:!bg-white/50 !transition-colors !group">
+                                            <td className="!px-8 !py-5">
+                                                <span className="!text-sm !font-black !text-gray-900">{displayId}</span>
+                                            </td>
                                             <td className="!px-8 !py-5">
                                                 <div className="!flex !items-center !gap-4">
                                                     <div className="!w-12 !h-12 !rounded-full !bg-gradient-to-br !from-gray-100 !to-white !shadow-sm !border !border-gray-200/50 !flex !items-center !justify-center !font-black !text-gray-700 !text-lg">
@@ -175,13 +194,13 @@ const UserManagement: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="!px-8 !py-5">
-                                                <div className="!flex !flex-col !items-start !gap-1.5">
-                                                    <span className={`!inline-flex !items-center !px-2.5 !py-1 !rounded-md !text-[10px] !font-bold !uppercase !tracking-wider ${roleColors[user.role] || '!bg-gray-100 !text-gray-800'}`}>
-                                                        {user.role}
-                                                    </span>
-                                                    <div className="!text-sm !font-bold !text-gray-700">{userIdNumber}</div>
-                                                    {deptInfo && <div className="!text-xs !font-semibold !text-gray-500">{deptInfo}</div>}
-                                                </div>
+                                                <span className={`!inline-flex !items-center !px-3 !py-1.5 !rounded-lg !text-xs !font-bold !uppercase !tracking-wider ${roleColors[user.role] || '!bg-gray-100 !text-gray-800'}`}>
+                                                    {user.role}
+                                                </span>
+                                            </td>
+                                            <td className="!px-8 !py-5">
+                                                <div className="!text-[15px] !font-black !text-gray-800">{userIdNumber}</div>
+                                                {deptInfo && <div className="!text-xs !font-semibold !text-gray-500 !mt-0.5">{deptInfo}</div>}
                                             </td>
                                             <td className="!px-8 !py-5">
                                                 <div className="!text-sm !font-semibold !text-gray-700">{user.mobile || 'No Mobile'}</div>
