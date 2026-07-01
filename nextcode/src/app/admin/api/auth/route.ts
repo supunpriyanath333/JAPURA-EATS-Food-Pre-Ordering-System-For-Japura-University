@@ -10,12 +10,12 @@ export async function POST(req: NextRequest) {
 
     const supabase = await supabaseServer();
 
-    // Check canteens table for matching email + canteen name
+    // Check canteens table for matching email + seller_password
     const { data: canteens, error } = await supabase
         .from('canteens')
         .select('*')
         .eq('seller_email', email)
-        .eq('name', password)
+        .eq('seller_password', password)
         .limit(1);
 
     if (error) {
