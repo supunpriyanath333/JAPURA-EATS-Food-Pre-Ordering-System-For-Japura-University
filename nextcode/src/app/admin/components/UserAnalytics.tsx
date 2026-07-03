@@ -127,7 +127,7 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
         });
 
         // Ensure all dates in range exist with 0
-        const result = [];
+        const result: { date: string; count: number; label: string }[] = [];
         let curr = new Date(startDate);
         while (curr <= now) {
             let key = '';
@@ -203,7 +203,7 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
         });
 
         // Ensure all dates in range exist
-        const result = [];
+        const result: { date: string; count: number; label: string }[] = [];
         let curr = new Date(startDate);
         while (curr <= now) {
             let key = '';
@@ -243,22 +243,26 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
 
     return (
         <div className="!animate-fade-in-up !relative !flex !flex-col !gap-6">
-            <div className="!flex !items-center !gap-4">
-                <button
-                    onClick={onBack}
-                    className="!p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm"
-                >
-                    <svg className="!w-5 !h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                </button>
-                <div>
-                    <h2 className="!text-2xl !font-extrabold !text-gray-900 !tracking-tight">User Analytics</h2>
-                    <p className="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider !mt-1">Detailed view of user engagement and growth</p>
+            {/* Header Area */}
+            <div className="!flex !items-center !justify-between !bg-white/60 !backdrop-blur-xl !rounded-3xl !p-6 !shadow-[0_4px_20px_rgb(0,0,0,0.03)] !border !border-white/60">
+                <div className="!flex !items-center !gap-4">
+                    <button
+                        onClick={onBack}
+                        className="!p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm !cursor-pointer"
+                    >
+                        <svg className="!w-5 !h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    </button>
+                    <div>
+                        <h2 className="!text-2xl !font-extrabold !text-gray-900 !tracking-tight">User Analytics</h2>
+                        <p className="!text-xs !font-bold !text-gray-500 !uppercase !tracking-wider !mt-1">Detailed view of user engagement and growth</p>
+                    </div>
                 </div>
             </div>
 
+            {/* Quick Stats Grid */}
             <div className="!grid !grid-cols-1 md:!grid-cols-2 !gap-6">
-                <div className="!bg-white/60 !backdrop-blur-xl !border !border-white/60 !rounded-3xl !p-6 !shadow-sm">
-                    <p className="!text-sm !font-bold !text-gray-500 !mb-2 !uppercase !tracking-wider">Active Users In Period</p>
+                <div className="!bg-gradient-to-br !from-red-50/80 !to-white/60 !backdrop-blur-xl !rounded-3xl !p-6 !shadow-sm !border !border-white/60">
+                    <p className="!text-sm !font-bold !text-[#B52222] !uppercase !tracking-wider !mb-2">Active Users In Period</p>
                     <div className="!flex !items-baseline !gap-3">
                         <h4 className="!text-4xl !font-black !text-gray-900">
                             {trendData.reduce((acc, curr) => acc + curr.count, 0).toLocaleString()}
@@ -266,8 +270,8 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
                     </div>
                 </div>
 
-                <div className="!bg-white/60 !backdrop-blur-xl !border !border-white/60 !rounded-3xl !p-6 !shadow-sm">
-                    <p className="!text-sm !font-bold !text-gray-500 !mb-2 !uppercase !tracking-wider">New Registrations In Period</p>
+                <div className="!bg-gradient-to-br !from-red-50/80 !to-white/60 !backdrop-blur-xl !rounded-3xl !p-6 !shadow-sm !border !border-white/60">
+                    <p className="!text-sm !font-bold !text-[#B52222] !uppercase !tracking-wider !mb-2">New Registrations In Period</p>
                     <div className="!flex !items-baseline !gap-3">
                         <h4 className="!text-4xl !font-black !text-gray-900">
                             {registrationData.reduce((acc, curr) => acc + curr.count, 0).toLocaleString()}

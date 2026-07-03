@@ -43,7 +43,7 @@ const Overview: React.FC = () => {
                         { id: 'c5', name: 'Library Cafe' },
                         { id: 'c6', name: 'Sports Complex Cafe' }
                     ];
-                    
+
                     const dummyOrders = [];
                     const statuses = ['accepted', 'processing', 'ready', 'picked_up', 'cancelled'];
                     const paymentMethods = ['Cash', 'Card'];
@@ -51,20 +51,20 @@ const Overview: React.FC = () => {
                     const timeSlots = ['12:00 PM - 1:00 PM', '1:00 PM - 2:00 PM', '7:00 AM - 8:00 AM'];
                     const cancelReasons = ['by user', 'by System'];
                     const now = new Date();
-                    
+
                     // Generate 1200 orders spread across 365 days
                     for (let i = 0; i < 1200; i++) {
                         const randomDaysAgo = Math.floor(Math.random() * 365);
                         const randomHour = Math.floor(Math.random() * 24);
                         const randomMinute = Math.floor(Math.random() * 60);
-                        
+
                         const date = new Date(now);
                         date.setDate(date.getDate() - randomDaysAgo);
                         date.setHours(randomHour, randomMinute, 0, 0);
-                        
+
                         const randomCanteen = dummyCanteens[Math.floor(Math.random() * dummyCanteens.length)];
                         const status = statuses[Math.floor(Math.random() * statuses.length)];
-                        
+
                         dummyOrders.push({
                             id: `DUM-${i.toString().padStart(4, '0')}`,
                             user_id: `USR-${Math.floor(Math.random() * 900) + 100}`,
@@ -80,12 +80,12 @@ const Overview: React.FC = () => {
                             items: ['Kottu', 'Iced Milo']
                         });
                     }
-                    
+
                     const todayOrders = dummyOrders.filter(o => {
                         const oDate = new Date(o.created_at);
                         return oDate.toDateString() === now.toDateString();
                     });
-                    
+
                     const dummyUsers: any[] = [];
                     // Generate 1500 users registered over last 365 days
                     for (let i = 0; i < 1500; i++) {
@@ -93,7 +93,7 @@ const Overview: React.FC = () => {
                         const date = new Date(now);
                         date.setDate(date.getDate() - randomDaysAgo);
                         date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60), 0, 0);
-                        
+
                         dummyUsers.push({
                             id: `USR-${i + 100}`,
                             created_at: date.toISOString(),
@@ -108,7 +108,7 @@ const Overview: React.FC = () => {
                         const date = new Date(now);
                         date.setDate(date.getDate() - randomDaysAgo);
                         date.setHours(Math.floor(Math.random() * 24), Math.floor(Math.random() * 60), 0, 0);
-                        
+
                         dummyLoginLogs.push({
                             id: `LOG-${i}`,
                             user_id: dummyUsers[Math.floor(Math.random() * dummyUsers.length)].id,
@@ -120,23 +120,23 @@ const Overview: React.FC = () => {
                         const lDate = new Date(l.login_time);
                         return lDate.toDateString() === now.toDateString();
                     });
-                    
+
                     const uniqueActiveUsersToday = new Set(todayLogins.map(l => l.user_id)).size;
 
                     // Calculate Yesterday's Stats
                     const yesterday = new Date(now);
                     yesterday.setDate(yesterday.getDate() - 1);
-                    
+
                     const yesterdayOrders = dummyOrders.filter(o => {
                         const oDate = new Date(o.created_at);
                         return oDate.toDateString() === yesterday.toDateString();
                     });
-                    
+
                     const yesterdayLogins = dummyLoginLogs.filter(l => {
                         const lDate = new Date(l.login_time);
                         return lDate.toDateString() === yesterday.toDateString();
                     });
-                    
+
                     const yesterdayTotalOrders = yesterdayOrders.length;
                     const yesterdayTotalRevenue = yesterdayOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
                     const yesterdayActiveUsers = new Set(yesterdayLogins.map(l => l.user_id)).size;
@@ -145,12 +145,12 @@ const Overview: React.FC = () => {
                         if (yesterday === 0) return { value: '+100%', isPositive: true };
                         if (today === 0 && yesterday > 0) return { value: '-100%', isPositive: false };
                         if (today === 0 && yesterday === 0) return { value: '0%', isPositive: true };
-                        
+
                         const diff = today - yesterday;
                         const percentage = Math.round((diff / yesterday) * 100);
-                        return { 
-                            value: percentage > 0 ? `+${percentage}%` : `${percentage}%`, 
-                            isPositive: percentage >= 0 
+                        return {
+                            value: percentage > 0 ? `+${percentage}%` : `${percentage}%`,
+                            isPositive: percentage >= 0
                         };
                     };
 
@@ -160,24 +160,24 @@ const Overview: React.FC = () => {
                     setTotalOrdersToday(tOrdersCount);
                     setTotalRevenueToday(tRevenue);
                     setActiveUsersToday(uniqueActiveUsersToday);
-                    
+
                     setOrdersTrend(calculateTrend(tOrdersCount, yesterdayTotalOrders));
                     setRevenueTrend(calculateTrend(tRevenue, yesterdayTotalRevenue));
                     setUsersTrend(calculateTrend(uniqueActiveUsersToday, yesterdayActiveUsers));
-                    
+
                     // Calculate Top 5 Canteens Today
                     const canteenStats = dummyCanteens.map(canteen => {
                         const count = todayOrders.filter(o => o.canteen_id === canteen.id).length;
                         return { name: canteen.name, orders: count };
                     }).sort((a, b) => b.orders - a.orders).slice(0, 5);
-                    
+
                     const maxOrders = Math.max(...canteenStats.map(c => c.orders), 1);
                     const formattedTop5 = canteenStats.map(c => ({
                         ...c,
                         percentage: Math.round((c.orders / maxOrders) * 100)
                     }));
                     setTop5Canteens(formattedTop5);
-                    
+
                     setOrders(dummyOrders);
                     setCanteens(dummyCanteens);
                     setUsers(dummyUsers);
@@ -195,24 +195,24 @@ const Overview: React.FC = () => {
     }, []);
 
     const stats = [
-        { 
+        {
             id: 'orders',
-            label: 'Total Orders Today', 
-            value: loading ? '...' : totalOrdersToday.toString(), 
+            label: 'Total Orders Today',
+            value: loading ? '...' : totalOrdersToday.toString(),
             trend: loading ? '...' : ordersTrend.value,
             isPositive: ordersTrend.isPositive
         },
-        { 
+        {
             id: 'revenue',
-            label: 'Daily Revenue', 
-            value: loading ? '...' : `LKR ${totalRevenueToday.toLocaleString()}`, 
+            label: 'Daily Revenue',
+            value: loading ? '...' : `LKR ${totalRevenueToday.toLocaleString()}`,
             trend: loading ? '...' : revenueTrend.value,
             isPositive: revenueTrend.isPositive
         },
-        { 
+        {
             id: 'users',
-            label: 'Active Users Today', 
-            value: loading ? '...' : activeUsersToday.toString(), 
+            label: 'Active Users Today',
+            value: loading ? '...' : activeUsersToday.toString(),
             trend: loading ? '...' : usersTrend.value,
             isPositive: usersTrend.isPositive
         },
@@ -222,20 +222,20 @@ const Overview: React.FC = () => {
 
     if (showAnalytics === 'revenue') {
         return (
-            <RevenueAnalytics 
-                orders={orders} 
-                canteens={canteens} 
-                onBack={() => setShowAnalytics(false)} 
+            <RevenueAnalytics
+                orders={orders}
+                canteens={canteens}
+                onBack={() => setShowAnalytics(false)}
             />
         );
     }
 
     if (showAnalytics === 'orders') {
         return (
-            <AnalyticsDetails 
-                orders={orders} 
-                canteens={canteens} 
-                onBack={() => setShowAnalytics(false)} 
+            <AnalyticsDetails
+                orders={orders}
+                canteens={canteens}
+                onBack={() => setShowAnalytics(false)}
             />
         );
     }
@@ -247,14 +247,14 @@ const Overview: React.FC = () => {
     return (
         <div className="!animate-fade-in-up !relative">
             <h2 className="!text-3xl !font-extrabold !text-gray-900 !tracking-tight !mb-8">Dashboard Overview</h2>
-            
+
             {/* Stats Grid */}
             <div className="!grid !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-4 !gap-6 !mb-8">
                 {/* Welcome Card */}
                 <div className="!bg-gradient-to-br !from-[#B52222] !to-[#8a1919] !rounded-3xl !p-6 !shadow-[0_8px_30px_rgba(181,34,34,0.3)] !relative !overflow-hidden !group !transition-all !duration-300 hover:!shadow-[0_8px_30px_rgba(181,34,34,0.4)]">
                     <div className="!absolute !top-0 !right-0 !w-32 !h-32 !bg-white !opacity-10 !rounded-full !-mr-10 !-mt-10 !transition-transform !duration-500 group-hover:!scale-110"></div>
                     <div className="!absolute !bottom-0 !left-0 !w-24 !h-24 !bg-white !opacity-10 !rounded-full !-ml-8 !-mb-8"></div>
-                    
+
                     <div className="!relative !z-10 !flex !flex-col !h-full !justify-between">
                         <div>
                             <p className="!text-sm !font-bold !text-red-100 !mb-1 !uppercase !tracking-wider">Welcome Back,</p>
@@ -272,12 +272,12 @@ const Overview: React.FC = () => {
                     <div key={idx} className="!bg-gradient-to-b !from-white/60 !to-white/20 !backdrop-blur-2xl !rounded-3xl !p-6 !shadow-[0_8px_32px_rgba(0,0,0,0.05)] !border !border-white/60 !relative !overflow-hidden !group hover:!shadow-[0_8px_32px_rgba(181,34,34,0.1)] hover:!border-red-100/50 !transition-all !duration-500 !flex !flex-col !justify-between !h-full">
                         <div className={`!absolute !top-0 !right-0 !w-40 !h-40 !bg-gradient-to-br !from-[#B52222]/20 !to-transparent !rounded-bl-full !-mr-10 !-mt-10 !transition-transform !duration-700 group-hover:!scale-125 !pointer-events-none`}></div>
                         <div className={`!absolute !bottom-0 !left-0 !w-24 !h-24 !bg-gradient-to-tr !from-gray-900/5 !to-transparent !rounded-tr-full !-ml-6 !-mb-6 !pointer-events-none`}></div>
-                        
+
                         <div className="!relative !z-10 !mb-6">
                             <p className="!text-sm !font-bold !text-gray-600 !mb-3 !uppercase !tracking-wider">{stat.label}</p>
                             <h3 className="!text-4xl !font-black !text-black !tracking-tight">{stat.value}</h3>
                         </div>
-                        
+
                         <div className="!flex !items-end !justify-between !w-full !relative !z-10 !mt-auto">
                             <div className={`!flex !items-center !gap-1.5 !text-sm !font-black ${stat.isPositive ? '!text-green-600' : '!text-[#B52222]'}`}>
                                 <div className={`!p-1.5 !rounded-full !bg-white/80 !backdrop-blur-sm !border !border-white/80 !shadow-sm`}>
@@ -296,9 +296,9 @@ const Overview: React.FC = () => {
                                 {stat.trend}
                             </div>
                             {(stat.id === 'orders' || stat.id === 'revenue' || stat.id === 'users') && (
-                                <button 
+                                <button
                                     onClick={() => setShowAnalytics(stat.id as 'orders' | 'revenue' | 'users')}
-                                    className={`!text-[10px] !font-black !uppercase !tracking-wider !text-[#B52222] !bg-white hover:!bg-red-50 !px-3 !py-1.5 !rounded-lg !transition-all !border !border-white/50 !shadow-sm hover:!shadow`}
+                                    className={`!cursor-pointer !text-[10px] !font-black !uppercase !tracking-wider !text-[#B52222] !bg-white hover:!bg-red-50 !px-3 !py-1.5 !rounded-lg !transition-all !border !border-white/50 !shadow-sm hover:!shadow`}
                                 >
                                     Details
                                 </button>
@@ -312,28 +312,28 @@ const Overview: React.FC = () => {
                 {/* Top Canteens - Glassmorphism Redesign */}
                 <div className="!bg-gradient-to-b !from-white/60 !to-white/20 !backdrop-blur-2xl !rounded-3xl !p-8 !shadow-[0_8px_32px_rgba(0,0,0,0.05)] !border !border-white/60 lg:!col-span-2 !flex !flex-col !relative !overflow-hidden">
                     <div className={`!absolute !top-0 !right-0 !w-64 !h-64 !bg-gradient-to-bl !from-gray-100/50 !to-transparent !rounded-bl-full !-mr-10 !-mt-10 !pointer-events-none`}></div>
-                    
-                    <h3 className="!text-xl !font-black !text-black !mb-8 !flex !items-center !gap-2 !relative !z-10 !uppercase !tracking-wider">
-                        <div className="!p-2 !bg-[#B52222]/10 !rounded-xl">
-                            <svg className="!w-5 !h-5 !text-[#B52222]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l10 6.5v7L12 22 2 15.5v-7L12 2z"></path></svg>
-                        </div>
+
+                    <h3 className="!text-xl !font-black !text-black !mb-4 !relative !z-10 !uppercase !tracking-wider">
                         Top 5 Performing Canteens Today
                     </h3>
-                    
-                    <div className="!space-y-5 !relative !z-10 !flex-1 !flex !flex-col !justify-center">
+
+                    <div className="!space-y-1.5 !relative !z-10 !flex-1 !flex !flex-col !justify-center !mt-4">
                         {top5Canteens.map((canteen, idx) => (
-                            <div key={idx} className="!group !flex !flex-col !gap-2">
+                            <div key={idx} className="!flex !flex-col !gap-1 !p-2 !px-3 !rounded-2xl !bg-white/30 hover:!bg-white/60 !transition-colors !group">
                                 <div className="!flex !items-center !justify-between">
                                     <div className="!flex !items-center !gap-3">
-                                        <div className="!w-8 !h-8 !rounded-full !bg-white/80 !border !border-gray-200 !shadow-sm !flex !items-center !justify-center !text-sm !font-black !text-[#B52222]">
+                                        <span className={`!font-black !text-lg ${idx === 0 ? '!text-[#B52222]' : '!text-gray-400'}`}>
                                             {idx + 1}
-                                        </div>
-                                        <span className="!text-gray-900 !font-bold !text-sm">{canteen.name}</span>
+                                        </span>
+                                        <span className="!text-black !font-bold !text-sm group-hover:!text-[#B52222] !transition-colors">{canteen.name}</span>
                                     </div>
-                                    <span className="!text-black !font-black !text-sm !bg-white/80 !px-3 !py-1 !rounded-lg !border !border-gray-100 !shadow-sm">{canteen.orders}</span>
+                                    <div className="!flex !items-baseline !gap-1.5">
+                                        <span className="!text-lg !font-black !text-black">{canteen.orders}</span>
+                                        <span className="!text-[10px] !font-bold !text-gray-500 !uppercase !tracking-wider">Orders</span>
+                                    </div>
                                 </div>
-                                <div className="!w-full !bg-gray-100/50 !rounded-full !h-2.5 !border !border-white/50 !shadow-inner !overflow-hidden !ml-11" style={{ width: 'calc(100% - 2.75rem)' }}>
-                                    <div className="!bg-[#B52222] !h-full !rounded-full !transition-all !duration-1000 !ease-out group-hover:!brightness-110 !shadow-sm" style={{ width: `${canteen.percentage}%` }}></div>
+                                <div className="!w-full !bg-white/50 !rounded-full !h-1.5 !overflow-hidden">
+                                    <div className="!bg-[#B52222] !h-full !rounded-full !transition-all !duration-1000 !ease-out group-hover:!brightness-110" style={{ width: `${canteen.percentage}%` }}></div>
                                 </div>
                             </div>
                         ))}
@@ -344,33 +344,48 @@ const Overview: React.FC = () => {
                 </div>
 
                 {/* System Health - Glassmorphism */}
-                <div className="!bg-gradient-to-br !from-[#B52222]/90 !to-[#8a1919]/90 !backdrop-blur-xl !rounded-3xl !p-8 !shadow-[0_8px_30px_rgba(181,34,34,0.3)] !border !border-red-400/50 !text-white !relative !overflow-hidden">
-                    <div className="!absolute !top-0 !right-0 !w-32 !h-32 !bg-white !opacity-10 !rounded-full !-mr-10 !-mt-10"></div>
-                    <div className="!absolute !bottom-0 !left-0 !w-24 !h-24 !bg-white !opacity-10 !rounded-full !-ml-8 !-mb-8"></div>
-                    
-                    <h3 className="!text-xl !font-black !mb-6 !relative !z-10 !flex !items-center !gap-2 !drop-shadow-md">
-                        <svg className="!w-6 !h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                <div className="!bg-gradient-to-b !from-white/60 !to-white/20 !backdrop-blur-2xl !rounded-3xl !p-8 !shadow-[0_8px_32px_rgba(0,0,0,0.05)] !border !border-white/60 !relative !overflow-hidden !flex !flex-col">
+                    <div className={`!absolute !top-0 !right-0 !w-40 !h-40 !bg-gradient-to-br !from-gray-100/50 !to-transparent !rounded-bl-full !-mr-10 !-mt-10 !pointer-events-none`}></div>
+
+                    <h3 className="!text-xl !font-black !text-black !mb-6 !relative !z-10 !uppercase !tracking-wider">
                         System Status
                     </h3>
-                    
-                    <div className="!relative !z-10 !flex !flex-col !gap-4">
-                        <div className="!flex !items-center !gap-4 !bg-white/10 !p-4 !rounded-2xl !backdrop-blur-md !border !border-white/10 !transition-transform hover:!scale-105">
-                            <div className="!w-3 !h-3 !bg-green-400 !rounded-full !shadow-[0_0_12px_rgba(74,222,128,0.9)] !animate-pulse"></div>
-                            <span className="!text-sm !font-black !tracking-wide">Ordering System Online</span>
+
+                    <div className="!relative !z-10 !flex !flex-col !gap-3 !flex-1 !justify-center">
+                        <div className="!flex !items-center !justify-between !bg-white/40 !p-4 !px-5 !rounded-2xl !border !border-white/60 !shadow-sm hover:!shadow-md hover:!bg-white/60 !transition-all !group">
+                            <div className="!flex !items-center !gap-4">
+                                <div className="!w-2.5 !h-2.5 !bg-green-500 !rounded-full !shadow-[0_0_8px_rgba(34,197,94,0.6)] !animate-pulse"></div>
+                                <span className="!text-sm !font-bold !text-gray-900 group-hover:!text-black !transition-colors">Ordering System</span>
+                            </div>
+                            <span className="!text-xs !font-black !text-green-600 !uppercase !tracking-wider">Online</span>
                         </div>
-                        <div className="!flex !items-center !gap-4 !bg-white/10 !p-4 !rounded-2xl !backdrop-blur-md !border !border-white/10 !transition-transform hover:!scale-105">
-                            <div className="!w-3 !h-3 !bg-green-400 !rounded-full !shadow-[0_0_12px_rgba(74,222,128,0.9)]"></div>
-                            <span className="!text-sm !font-black !tracking-wide">Database Connected</span>
+                        <div className="!flex !items-center !justify-between !bg-white/40 !p-4 !px-5 !rounded-2xl !border !border-white/60 !shadow-sm hover:!shadow-md hover:!bg-white/60 !transition-all !group">
+                            <div className="!flex !items-center !gap-4">
+                                <div className="!w-2.5 !h-2.5 !bg-green-500 !rounded-full !shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                <span className="!text-sm !font-bold !text-gray-900 group-hover:!text-black !transition-colors">Database</span>
+                            </div>
+                            <span className="!text-xs !font-black !text-green-600 !uppercase !tracking-wider">Connected</span>
                         </div>
-                        <div className="!flex !items-center !gap-4 !bg-white/10 !p-4 !rounded-2xl !backdrop-blur-md !border !border-white/10 !transition-transform hover:!scale-105">
-                            <div className="!w-3 !h-3 !bg-green-400 !rounded-full !shadow-[0_0_12px_rgba(74,222,128,0.9)]"></div>
-                            <span className="!text-sm !font-black !tracking-wide">Payment Gateway Active</span>
+                        <div className="!flex !items-center !justify-between !bg-white/40 !p-4 !px-5 !rounded-2xl !border !border-white/60 !shadow-sm hover:!shadow-md hover:!bg-white/60 !transition-all !group">
+                            <div className="!flex !items-center !gap-4">
+                                <div className="!w-2.5 !h-2.5 !bg-green-500 !rounded-full !shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                <span className="!text-sm !font-bold !text-gray-900 group-hover:!text-black !transition-colors">Payment Gateway</span>
+                            </div>
+                            <span className="!text-xs !font-black !text-green-600 !uppercase !tracking-wider">Active</span>
+                        </div>
+                        <div className="!flex !items-center !justify-between !bg-white/40 !p-4 !px-5 !rounded-2xl !border !border-white/60 !shadow-sm hover:!shadow-md hover:!bg-white/60 !transition-all !group">
+                            <div className="!flex !items-center !gap-4">
+                                <div className="!w-2.5 !h-2.5 !bg-green-500 !rounded-full !shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                                <span className="!text-sm !font-bold !text-gray-900 group-hover:!text-black !transition-colors">Canteens Online</span>
+                            </div>
+                            <span className="!text-xs !font-black !text-green-600 !uppercase !tracking-wider">{canteens.length} Active</span>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <style dangerouslySetInnerHTML={{__html: `
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 .animate-fade-in-up {
                     animation: fadeInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
                 }
