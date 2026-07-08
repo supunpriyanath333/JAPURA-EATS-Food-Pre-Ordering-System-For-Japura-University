@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FoodItemManagement from "./FoodManagement";
 import OrderManagement from "./OrderManagement";
+import OrderRequests from "./OrderRequests";
 
 interface SellerDashboardProps {
     canteenId: string;
@@ -9,9 +10,10 @@ interface SellerDashboardProps {
 }
 
 const SellerDashboard: React.FC<SellerDashboardProps> = ({ canteenId, email, onLogout }) => {
-    const [activeTab, setActiveTab] = useState<'orders' | 'food'>('orders');
+    const [activeTab, setActiveTab] = useState<'requests' | 'orders' | 'food'>('requests');
 
     const tabs = [
+        { id: 'requests', label: 'New Requests', icon: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></> },
         { id: 'orders', label: 'Order Management', icon: <><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></> },
         { id: 'food', label: 'Food Menu', icon: <><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></> },
     ];
@@ -82,6 +84,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ canteenId, email, onL
             <div className="!flex-1 !overflow-y-auto !bg-transparent !relative !z-10">
                 <main className="!max-w-7xl !mx-auto !p-8">
                     <div className="!animate-fade-in-up">
+                        {activeTab === 'requests' && <OrderRequests canteenId={canteenId} />}
                         {activeTab === 'orders' && <OrderManagement />}
                         {activeTab === 'food' && <FoodItemManagement canteenId={canteenId} />}
                     </div>

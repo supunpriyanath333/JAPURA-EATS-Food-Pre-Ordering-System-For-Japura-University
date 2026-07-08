@@ -7,22 +7,22 @@ const supabase = supabaseServer();
 
 // --- MAPPING DB STATUS TO FRONTEND STATUS TYPE ---
 type DBStatus = 'pending' | 'accepted' | 'preparing' | 'ready_for_pickup' | 'delivered' | 'cancelled';
-type FrontendStatus = 'accepted' | 'preparing' | 'ready' | 'picked_up';
+type FrontendStatus = 'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up' | 'cancelled';
 
 const mapStatusToFrontend = (dbStatus: DBStatus): FrontendStatus => {
     switch (dbStatus) {
-        case 'pending':
-        case 'accepted':
-            return 'accepted';
+        case 'accepted': // DB default state
+            return 'pending'; // New request in frontend
         case 'preparing':
-            return 'preparing';
+            return 'preparing'; // Seller accepted & preparing
         case 'ready_for_pickup':
             return 'ready';
         case 'delivered':
-        case 'cancelled': // Assuming cancelled is treated as history/final state
             return 'picked_up';
+        case 'cancelled':
+            return 'cancelled';
         default:
-            return 'accepted';
+            return 'pending';
     }
 };
 
@@ -94,23 +94,35 @@ export async function GET(req: NextRequest) {
             const createdAt = new Date(order.created_at);
             const rawStatus = order.status as DBStatus;
 
+            // Format pickup_time as range if it isn't already
+            let formattedPickupTime = order.pickup_time || 'ASAP';
+            if (formattedPickupTime !== 'ASAP' && !formattedPickupTime.includes('-')) {
+                // simple format logic: assume it's like "12:30 PM", add 15 mins for mock
+                formattedPickupTime = `${formattedPickupTime} - ${formattedPickupTime} (+15m)`;
+            }
+
             return {
                 id: order.id,
                 // Using real OTP if exists, fallback to '****'
                 otp: order.otp || "****",
-                opt: order.otp || "****", 
                 // FIX 1: Map the DB status string to the defined Frontend type (accepted, preparing, ready, picked_up)
                 status: mapStatusToFrontend(rawStatus), 
                 // FIX 2: Use Number() on the total_amount (which is numeric/string from DB)
                 total: Number(order.total_amount), 
-                // FIX 3: Map items array to required string[] format
-                items: order.order_items.map(item => `${item.name} x ${item.quantity}`),
+                // FIX 3: Map items array to required OrderItem format with mocked special instructions
+                items: order.order_items.map((item: any) => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    // Mock special instructions for demo purposes (mostly show it)
+                    special_instructions: 'Make it extra spicy'
+                })),
                 // Date/Time formatting
                 date: createdAt.toLocaleDateString('en-CA'), // YYYY-MM-DD format approximation
                 time: createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
-                pickup_time: order.pickup_time,
+                pickup_time: formattedPickupTime,
                 // FIX 4: Map payment_method string to 'Card' | 'Cash' (title-cased)
                 payment: order.payment_method.charAt(0).toUpperCase() + order.payment_method.slice(1) as 'Card' | 'Cash', 
+                diningOption: Math.random() > 0.5 ? 'Dine-in' : 'Takeaway' // Mocked for now
             };
         });
 

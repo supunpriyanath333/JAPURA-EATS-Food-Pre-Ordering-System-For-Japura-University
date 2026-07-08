@@ -3,40 +3,48 @@ import { useState, useCallback, useEffect } from "react";
 // import { Order } from "../../../../global"; 
 
 // --- Frontend Prop Definitions ---
-export type OrderStatus = 'accepted' | 'preparing' | 'ready' | 'picked_up';
+export type OrderStatus = 'pending' | 'accepted' | 'preparing' | 'ready' | 'picked_up' | 'cancelled';
+
+export interface OrderItem {
+    name: string;
+    quantity: number;
+    special_instructions?: string;
+}
+
 export interface Order {
     id: string;
-    opt: string;
+    otp: string;
     status: OrderStatus;
     total: number;
-    items: string[]; // e.g., ['Chicken Kottu x 1']
+    items: OrderItem[];
     date: string;
     time: string;
     pickup_time: string;
     payment: 'Card' | 'Cash';
+    diningOption?: 'Dine-in' | 'Takeaway';
 }
 // ---
 
 // 🎯 Status flow array defined globally for both helper and component
-const STATUS_FLOW: OrderStatus[] = ['accepted', 'preparing', 'ready', 'picked_up'];
+const STATUS_FLOW: OrderStatus[] = ['preparing', 'ready', 'picked_up'];
 
 // NOTE: The database statuses are used here: pending, accepted, preparing, ready_for_pickup, delivered, cancelled
 const STATUS_COLORS: { [key in Order['status'] | 'pending' | 'cancelled']: string } = {
-    pending: 'bg-amber-500', // Amber/Yellow
-    cancelled: 'bg-red-500', // Red
-    accepted: 'bg-yellow-400', // Yellow
-    preparing: 'bg-blue-500', // Blue
-    ready: 'bg-green-500', // Green
-    picked_up: 'bg-gray-400', // Grey
+    pending: 'bg-[#B52222]',
+    cancelled: 'bg-red-500',
+    accepted: 'bg-[#B52222]',
+    preparing: 'bg-[#B52222]',
+    ready: 'bg-[#B52222]',
+    picked_up: 'bg-[#B52222]',
 };
 
 const STATUS_TEXT_COLORS: { [key in Order['status'] | 'pending' | 'cancelled']: string } = {
-    pending: 'text-amber-500',
-    cancelled: 'text-red-500',
-    accepted: 'text-yellow-500',
-    preparing: 'text-blue-500',
-    ready: 'text-green-500',
-    picked_up: 'text-gray-500',
+    pending: 'text-[#B52222]',
+    cancelled: 'text-gray-500',
+    accepted: 'text-[#B52222]',
+    preparing: 'text-[#B52222]',
+    ready: 'text-[#B52222]',
+    picked_up: 'text-[#B52222]',
 };
 
 // Helper to determine the next step in the flow
@@ -79,9 +87,19 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, updateOrderStatus }) => {
                         {order.status.replace('_', ' ')}
                     </span>
                 </div>
-                <div className="!text-right">
-                    <span className="!text-sm !font-bold !text-gray-500 !block">{order.date}</span>
-                    <span className="!text-xl !font-black !text-[#B52222]">Rs. {order.total.toFixed(2)}</span>
+                <div className="!text-right !flex !flex-col !items-end">
+                    <div className="!flex !items-center !gap-2 !text-[10px] !font-bold !text-gray-500 !mb-1 !bg-gray-100 !px-2 !py-1 !rounded-md !whitespace-nowrap">
+                        <span className="!flex !items-center !gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="!h-3 !w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            {order.date}
+                        </span>
+                        <span className="!text-gray-300">|</span>
+                        <span className="!flex !items-center !gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="!h-3 !w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            {order.time}
+                        </span>
+                    </div>
+                    <p className="!text-xl !font-black !text-[#B52222]">Rs. {order.total.toFixed(2)}</p>
                 </div>
             </div>
 
@@ -121,10 +139,19 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, updateOrderStatus }) => {
             {/* Order Details */}
             <div className="!pt-4 !border-t !border-gray-50 !flex-grow">
                 <h5 className="!text-xs !font-black !text-gray-400 !uppercase !tracking-wider !mb-3">Order Items</h5>
-                <ul className="!space-y-2 !mb-4">
+                <ul className="!space-y-3 !mb-4">
                     {order.items.map((item, index) => (
-                        <li key={index} className="!text-sm !font-semibold !text-gray-700 !flex !items-start">
-                            <span className="!text-[#B52222] !mr-2">•</span> {item}
+                        <li key={index} className="!text-sm !font-semibold !text-gray-700 !flex !flex-col !gap-1">
+                            <div className="!flex !items-start">
+                                <span className="!text-[#B52222] !mr-2 !mt-0.5">•</span> 
+                                <span>{item.name} <span className="!text-gray-400 !ml-1">x {item.quantity}</span></span>
+                            </div>
+                            {item.special_instructions && (
+                                <div className="!pl-4 !ml-1.5 !border-l-2 !border-amber-200 !text-xs !italic !text-amber-700 !bg-amber-50/50 !p-1.5 !rounded-r-md">
+                                    <span className="!font-bold !not-italic !mr-1">Note:</span>
+                                    {item.special_instructions}
+                                </div>
+                            )}
                         </li>
                     ))}
                 </ul>
@@ -132,8 +159,14 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, updateOrderStatus }) => {
                 <div className="!mt-4 !text-sm !font-medium !flex !flex-col !gap-2 !bg-gray-50/50 !p-3 !rounded-xl">
                     <div className="!flex !justify-between !border-b !border-gray-200 !pb-2">
                         <span className="!text-gray-500">Pick-up Time</span>
-                        <span className={`!font-bold ${statusTextClass}`}>{order.pickup_time || 'ASAP'}</span>
+                        <span className="!font-bold !text-gray-900">{order.pickup_time || 'ASAP'}</span>
                     </div>
+                    {order.diningOption && (
+                        <div className="!flex !justify-between !border-b !border-gray-200 !pb-2">
+                            <span className="!text-gray-500">Dining Option</span>
+                            <span className="!font-bold !text-gray-900">{order.diningOption}</span>
+                        </div>
+                    )}
                     <div className="!flex !justify-between">
                         <span className="!text-gray-500">Payment Method</span>
                         <span className="!font-bold !text-gray-900">{order.payment}</span>
@@ -254,8 +287,8 @@ const OrderManagement: React.FC<OrderManagementProps> = () => {
                         <div className="!w-12 !h-12 !border-4 !border-gray-200 !border-t-[#B52222] !rounded-full !animate-spin !mb-4"></div>
                         <p className="!text-gray-500 !font-semibold !animate-pulse">Fetching live orders...</p>
                     </div>
-                ) : orders.filter(o => o.status !== 'picked_up').length > 0 ? (
-                    orders.filter(o => o.status !== 'picked_up').map(order => 
+                ) : orders.filter(o => !['picked_up', 'pending', 'cancelled'].includes(o.status)).length > 0 ? (
+                    orders.filter(o => !['picked_up', 'pending', 'cancelled'].includes(o.status)).map(order => 
                         <OrderCard 
                             key={order.id} 
                             order={order} 

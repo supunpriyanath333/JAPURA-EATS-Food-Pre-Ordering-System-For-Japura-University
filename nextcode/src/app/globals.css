@@ -347,3 +347,18 @@ h6 {
 .animate-arrow-slide {
   animation: arrowSlide 1.5s ease-in-out infinite;
 }
+
+@keyframes mild-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 5px rgba(181, 34, 34, 0.2);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow: 0 0 15px rgba(181, 34, 34, 0.5);
+  }
+}
+
+.animate-mild-breathe {
+  animation: mild-breathe 2.5s ease-in-out infinite;
+}
