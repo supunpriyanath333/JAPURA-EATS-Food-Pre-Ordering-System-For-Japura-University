@@ -171,10 +171,10 @@ const Overview: React.FC = () => {
                         return { name: canteen.name, orders: count };
                     }).sort((a, b) => b.orders - a.orders).slice(0, 5);
 
-                    const maxOrders = Math.max(...canteenStats.map(c => c.orders), 1);
+                    const dailyTotal = Math.max(tOrdersCount, 1);
                     const formattedTop5 = canteenStats.map(c => ({
                         ...c,
-                        percentage: Math.round((c.orders / maxOrders) * 100)
+                        percentage: Math.round((c.orders / dailyTotal) * 100)
                     }));
                     setTop5Canteens(formattedTop5);
 
@@ -296,8 +296,7 @@ const Overview: React.FC = () => {
                                 {stat.trend}
                             </div>
                             {(stat.id === 'orders' || stat.id === 'revenue' || stat.id === 'users') && (
-                                <button
-                                    onClick={() => setShowAnalytics(stat.id as 'orders' | 'revenue' | 'users')}
+                                <button onClick={() => setShowAnalytics(stat.id as 'orders' | 'revenue' | 'users')}
                                     className={`!cursor-pointer !text-[10px] !font-black !uppercase !tracking-wider !text-[#B52222] !bg-white hover:!bg-red-50 !px-3 !py-1.5 !rounded-lg !transition-all !border !border-white/50 !shadow-sm hover:!shadow`}
                                 >
                                     Details

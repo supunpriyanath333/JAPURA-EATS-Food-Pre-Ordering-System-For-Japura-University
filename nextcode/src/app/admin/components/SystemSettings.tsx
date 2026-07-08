@@ -34,9 +34,8 @@ const SystemSettings: React.FC = () => {
                     </div>
                     
                     {/* Toggle Button */}
-                    <button 
-                        onClick={() => setHolidayMode(!holidayMode)}
-                        className={`!relative !inline-flex !h-9 !w-16 !items-center !rounded-full !transition-all !duration-500 !cursor-pointer focus:!outline-none !shadow-inner !border !border-white/40 ${
+                    <button onClick={() => setHolidayMode(!holidayMode)}
+                        className={`!cursor-pointer !relative !inline-flex !h-9 !w-16 !items-center !rounded-full !transition-all !duration-500 focus:!outline-none !shadow-inner !border !border-white/40 ${
                             holidayMode ? '!bg-gradient-to-r !from-red-500 !to-[#B52222]' : '!bg-gray-300'
                         }`}
                     >

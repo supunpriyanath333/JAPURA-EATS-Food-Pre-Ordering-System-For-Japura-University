@@ -73,7 +73,7 @@ const LoginPage: React.FC = () => {
 
   const inputStyles = "!w-full !px-4 !py-3 !bg-white/70 !border !border-white/60 !rounded-xl focus:!outline-none focus:!ring-2 focus:!ring-[#B52222]/40 focus:!bg-white focus:!border-transparent !transition-all !text-gray-800 placeholder-!text-gray-400 !font-medium";
   const labelStyles = "!block !text-sm !font-semibold !text-gray-700 !mb-1.5 !ml-1";
-  const btnStyles = "!w-full !bg-gradient-to-r !from-[#B52222] !to-[#9a1b1b] !text-white !font-bold !rounded-xl !py-3.5 !shadow-lg !shadow-red-900/20 hover:!shadow-xl hover:!shadow-red-900/30 active:!scale-[0.98] !transition-all !flex !justify-center !items-center !cursor-pointer";
+  const btnStyles = "!w-full !bg-gradient-to-r !from-[#B52222] !to-[#9a1b1b] !text-white !font-bold !rounded-xl !py-3.5 !shadow-lg !shadow-red-900/20 hover:!shadow-xl hover:!shadow-red-900/30 active:!scale-[0.98] !transition-all !flex !justify-center !items-center";
 
   return (
     <div className="!min-h-screen !flex !items-center !justify-center !bg-black/60 !backdrop-blur-md !p-4 !transition-opacity !duration-300" style={{ backgroundImage: 'url(/landing/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundBlendMode: 'overlay' }}>
@@ -96,15 +96,13 @@ const LoginPage: React.FC = () => {
 
         {/* Custom Tabs */}
         <div className="!flex !bg-white/50 !p-1.5 !rounded-xl !border !border-white/60 !shadow-sm !mb-6">
-          <button
-            onClick={() => { setTab('admin'); setError(''); }}
-            className={`!flex-1 !py-2.5 !text-sm !font-semibold !rounded-lg !transition-all !cursor-pointer ${tab === 'admin' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!bg-white/50'}`}
+          <button onClick={() => { setTab('admin'); setError(''); }}
+            className={`!cursor-pointer !flex-1 !py-2.5 !text-sm !font-semibold !rounded-lg !transition-all ${tab === 'admin' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!bg-white/50'}`}
           >
             System Admin
           </button>
-          <button
-            onClick={() => { setTab('seller'); setError(''); }}
-            className={`!flex-1 !py-2.5 !text-sm !font-semibold !rounded-lg !transition-all !cursor-pointer ${tab === 'seller' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!bg-white/50'}`}
+          <button onClick={() => { setTab('seller'); setError(''); }}
+            className={`!cursor-pointer !flex-1 !py-2.5 !text-sm !font-semibold !rounded-lg !transition-all ${tab === 'seller' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!bg-white/50'}`}
           >
             Canteen Owner
           </button>
@@ -158,7 +156,7 @@ const LoginPage: React.FC = () => {
 
           {/* Go to Client Website */}
           <Link href="/" className="!block !w-full">
-            <button type="button" className="!w-full !bg-white/50 !border !border-gray-300/60 !text-gray-600 !font-semibold !rounded-xl !py-3 hover:!bg-white hover:!text-gray-900 !transition-all !text-sm !flex !items-center !justify-center !gap-2 !shadow-sm !cursor-pointer">
+            <button type="button" className="!w-full !bg-white/50 !border !border-gray-300/60 !text-gray-600 !font-semibold !rounded-xl !py-3 hover:!bg-white hover:!text-gray-900 !transition-all !text-sm !flex !items-center !justify-center !gap-2 !shadow-sm">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
               Go to Client Website
             </button>

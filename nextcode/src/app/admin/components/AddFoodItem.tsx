@@ -64,7 +64,7 @@ const AddFoodItem: React.FC<AddFoodItemProps> = ({ canteenId, onItemAdded }) => 
 
     return (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px', margin: '0 auto' }}>
-            <select value={mealType} onChange={e => setMealType(e.target.value as MealType)}>
+            <select value={mealType} onChange={e => setMealType(e.target.value as MealType)} className="!cursor-pointer">
                 <option value="breakfast">Breakfast</option>
                 <option value="lunch">Lunch</option>
                 <option value="dinner">Dinner</option>

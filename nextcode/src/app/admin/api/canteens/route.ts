@@ -36,7 +36,10 @@ export async function PUT(req: NextRequest) {
 
     const supabase = await supabaseServer();
     
-    const updateData: any = { name, location, phone, description, seller_email, imageUrl };
+    const updateData: any = { name, location, phone, description, seller_email };
+    if (imageUrl !== undefined) {
+        updateData.imageUrl = imageUrl;
+    }
     if (seller_password) {
         updateData.seller_password = seller_password;
     }

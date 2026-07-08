@@ -1,19 +1,20 @@
-
 import { useState, useCallback, useEffect } from "react";
 import { MealType, FoodItem } from "../../../../global";
-import { PRIMARY_TEXT, CARD_BG, SECONDARY_TEXT, GRAY_BORDER, SUCCESS_COLOR, ERROR_COLOR, JAPURA_EATS_COLOR } from "../constants/colors";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-
-
 
 interface FoodItemManagementProps {
     canteenId: string;
 }
 
+const MEAL_TABS: { key: MealType, label: string }[] = [
+    { key: 'breakfast', label: 'Breakfast' },
+    { key: 'lunch', label: 'Lunch' },
+    { key: 'dinner', label: 'Dinner' }
+];
+
 const FoodItemManagement: React.FC<FoodItemManagementProps> = ({ canteenId }) => {
-    const [activeMeal, setActiveMeal] = useState<MealType>('lunch'); // Default to Lunch
+    const [activeMeal, setActiveMeal] = useState<MealType>('lunch');
     const [showAddForm, setShowAddForm] = useState(false);
     const [newItemName, setNewItemName] = useState("");
     const [newItemPrice, setNewItemPrice] = useState<number | "">("");
@@ -21,100 +22,66 @@ const FoodItemManagement: React.FC<FoodItemManagementProps> = ({ canteenId }) =>
     const [newItemImage, setNewItemImage] = useState<File | null>(null);
     const [newItemImagePreview, setNewItemImagePreview] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
-
- 
-
-    const s3 = new S3Client({
-    region: "us-east-1", // can be anything for Supabase S3
-    credentials: {
-        accessKeyId: process.env.S3_KEY!,
-        secretAccessKey: process.env.S3_SECRET!,
-    },
-    endpoint: "https://osxtgxoimjitojyrwgso.storage.supabase.co",
-    forcePathStyle: true,
-    });
-
-    async function uploadFoodImageS3(file: File, canteenId: string) {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${canteenId}_${Date.now()}.${fileExt}`;
-    const filePath = `food-images/${fileName}`;
-
-    const command = new PutObjectCommand({
-        Bucket: "food-images",
-        Key: filePath,
-        Body: file,
-        ContentType: file.type,
-        ACL: "public-read", // make it accessible
-    });
-
-    await s3.send(command);
-
-    // Construct public URL manually
-    return `https://osxtgxoimjitojyrwgso.storage.supabase.co/food-images/${fileName}`;
-    }
-
-
+    const [loading, setLoading] = useState(false);
 
     const [foodItems, setFoodItems] = useState<{ [key in MealType]: FoodItem[] }>({
-        breakfast: [
-            { id: 'f1', name: 'Milk Rice', price: 150, available: true },
-            { id: 'f2', name: 'String Hoppers', price: 120, available: false }
-        ], 
-        lunch: [
-            { id: 'f3', name: 'Chicken Kottu', price: 450, available: true },
-            { id: 'f4', name: 'Veg Fried Rice', price: 350, available: true },
-        ], 
+        breakfast: [],
+        lunch: [],
         dinner: []
     });
-    const [loading, setLoading] = useState<boolean>(false); // Mock loading state
 
     const fetchFoodItems = useCallback(async () => {
         setLoading(true);
-    
-        const { data, error } = await supabase
-            .from("food_items")
-            .select("*")
-            .eq("canteen_id", canteenId);
-    
-        if (error) {
-            console.error("Fetch error:", error);
+        try {
+            const { data, error } = await supabase
+                .from("food_items")
+                .select("*")
+                .eq("canteen_id", canteenId)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Error fetching food items:", error.message);
+                return;
+            }
+
+            if (data) {
+                const grouped = {
+                    breakfast: data.filter((item: any) => item.meal_type === "breakfast"),
+                    lunch: data.filter((item: any) => item.meal_type === "lunch"),
+                    dinner: data.filter((item: any) => item.meal_type === "dinner"),
+                };
+                setFoodItems(grouped);
+            }
+        } catch (err) {
+            console.error("Unexpected error fetching food items:", err);
+        } finally {
             setLoading(false);
-            return;
         }
-    
-        // Convert DB rows into structure grouped by meal type
-        const grouped = {
-            breakfast: data.filter((item: any) => item.meal_type === "breakfast"),
-            lunch: data.filter((item: any) => item.meal_type === "lunch"),
-            dinner: data.filter((item: any) => item.meal_type === "dinner"),
-        };
-    
-        setFoodItems(grouped);
-        setLoading(false);
     }, [canteenId]);
-    
 
     useEffect(() => {
-        // Mock fetch on mount
-        fetchFoodItems(); 
-    }, [fetchFoodItems]);
+        if (canteenId) {
+            fetchFoodItems();
+        }
+    }, [canteenId, fetchFoodItems]);
 
-    const handleToggleAvailability = (item: FoodItem) => {
-        // Mocking state update for the UI:
-        setFoodItems(prev => ({
-            ...prev,
-            [activeMeal]: prev[activeMeal].map(i => i.id === item.id ? { ...i, available: !i.available } : i)
-        }));
-        // Mock supabase update call
-        console.log(`Toggling availability for ${item.name}`);
-        supabase.from('food_items').update({ available: !item.available });
+    const handleToggleAvailability = async (item: FoodItem) => {
+        try {
+            const { error } = await supabase
+                .from("food_items")
+                .update({ available: !item.available })
+                .eq("id", item.id);
+
+            if (error) {
+                alert(`Error toggling availability: ${error.message}`);
+                return;
+            }
+            fetchFoodItems();
+        } catch (err) {
+            console.error("Error toggling availability:", err);
+            alert("An unexpected error occurred.");
+        }
     };
-
-    const MEAL_TABS = [
-        { key: 'breakfast', label: 'BREAKFAST', color: '#B52222' },
-        { key: 'lunch', label: 'LUNCH', color: '#FAB301' }, // Orange/Yellow
-        { key: 'dinner', label: 'DINNER', color: '#AA2B2B' },
-    ];
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -124,20 +91,15 @@ const FoodItemManagement: React.FC<FoodItemManagementProps> = ({ canteenId }) =>
         }
     };
 
-    const uploadFoodImage = async (file: File, canteenId: string): Promise<string | null> => {
+    const uploadFoodImage = async (file: File, cId: string): Promise<string | null> => {
         if (!file) return null;
-    
         const fileExt = file.name.split(".").pop();
-        const fileName = `${canteenId}_${Date.now()}.${fileExt}`;
+        const fileName = `${cId}_${Date.now()}.${fileExt}`;
         const filePath = `newbucket/${fileName}`;
     
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from("newbucket")
-            .upload(filePath, file, {
-                cacheControl: "3600",
-                upsert: true,
-                contentType: file.type,
-            });
+            .upload(filePath, file, { cacheControl: "3600", upsert: true, contentType: file.type });
     
         if (uploadError) {
             console.error("Image upload error:", uploadError);
@@ -148,346 +110,217 @@ const FoodItemManagement: React.FC<FoodItemManagementProps> = ({ canteenId }) =>
             .from("newbucket")
             .getPublicUrl(filePath);
     
-        if (!publicData?.publicUrl) {
-            console.error("Failed to get public URL for image");
-            return null;
-        }
-    
         return publicData.publicUrl;
     };
 
-    const insertFoodItem = async (foodItem: {
-        canteen_id: string;
-        meal_type: string;
-        name: string;
-        price: number;
-        description?: string;
-        image_url?: string | null;
-    }) => {
-        const { error } = await supabase
-            .from("food_items")
-            .insert(foodItem);
-    
-        if (error) {
-            console.error("DB insert error:", error);
-            return false;
-        }
-    
-        return true;
-    };
-    
-    
-    
-        
     const submitNewFoodItem = async () => {
-        if (!newItemName || !newItemPrice) {
-            alert("Name & Price are required");
+        if (!newItemName || !newItemPrice || !newItemDescription) {
+            alert("Please fill in all required fields (Name, Price, Description).");
             return;
         }
-    
         setUploading(true);
-    
+
+        let imageUrl = "https://via.placeholder.com/150";
+        if (newItemImage) {
+            const uploadedUrl = await uploadFoodImage(newItemImage, canteenId);
+            if (uploadedUrl) {
+                imageUrl = uploadedUrl;
+            } else {
+                alert("Failed to upload image. Using placeholder.");
+            }
+        }
+
         try {
-            const image_url = newItemImage
-                ? await uploadFoodImage(newItemImage, canteenId)
-                : null;
-    
-            const success = await insertFoodItem({
+            const { error } = await supabase.from("food_items").insert([{
                 canteen_id: canteenId,
-                meal_type: activeMeal,
                 name: newItemName,
                 price: Number(newItemPrice),
                 description: newItemDescription,
-                image_url,
-            });
-    
-            if (!success) {
-                alert("Failed to add food item");
+                image_url: imageUrl,
+                meal_type: activeMeal,
+                available: true
+            }]);
+
+            if (error) {
+                alert(`Failed to add food item: ${error.message}`);
+                setUploading(false);
                 return;
             }
-    
+
             setNewItemName("");
             setNewItemPrice("");
             setNewItemDescription("");
             setNewItemImage(null);
             setNewItemImagePreview(null);
             setShowAddForm(false);
-    
             fetchFoodItems();
         } catch (err) {
             console.error("Unexpected error:", err);
-            alert("An unexpected error occurred");
+            alert("An unexpected error occurred.");
         } finally {
             setUploading(false);
         }
     };
-    
-    
-    
-    
-    
-    
 
-    const inputStyle: React.CSSProperties = {
-        width: "100%",
-        padding: "0.75rem",
-        marginTop: "1rem",
-        borderRadius: "0.5rem",
-        border: "1px solid #ccc",
-        fontSize: "0.9rem"
+    const handleDelete = async (id: string) => {
+        if (confirm("Are you sure you want to delete this item?")) {
+            const { error } = await supabase.from('food_items').delete().eq('id', id);
+            if (error) {
+                alert(`Failed to delete: ${error.message}`);
+            } else {
+                fetchFoodItems();
+            }
+        }
     };
-    
-    const submitButtonStyle: React.CSSProperties = {
-        width: "100%",
-        marginTop: "1.5rem",
-        padding: "0.75rem",
-        background: JAPURA_EATS_COLOR,
-        color: "white",
-        fontWeight: "700",
-        borderRadius: "0.5rem",
-        border: "none",
-        cursor: "pointer"
-    };
-    
-    const cancelButtonStyle: React.CSSProperties = {
-        width: "100%",
-        marginTop: "1rem",
-        padding: "0.75rem",
-        background: "#ccc",
-        color: "#000",
-        borderRadius: "0.5rem",
-        border: "none",
-        cursor: "pointer"
-    };
-    
-    
 
     return (
-        <div style={{ maxWidth: '48rem', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <h3 style={{ fontSize: '1.875rem', fontWeight: '800', color: PRIMARY_TEXT, textAlign: 'center', marginBottom: '1.5rem' }}>Canteen Menu Management</h3>
+        <div className="!max-w-7xl !mx-auto !flex !flex-col !gap-8 !pb-12">
+            <div className="!text-center !mb-4">
+                <h3 className="!text-3xl md:!text-4xl !font-extrabold !text-gray-900 !tracking-tight">Canteen Menu Management</h3>
+                <p className="!text-gray-500 !font-medium !mt-2">Organize and update your daily food offerings</p>
+            </div>
             
             {/* Meal Type Toggle (Modern Capsule Style) */}
-            <div 
-                style={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    borderRadius: '9999px', 
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', 
-                    overflow: 'hidden', 
-                    maxWidth: '36rem', 
-                    margin: '0 auto', 
-                    padding: '0.25rem',
-                    backgroundColor: CARD_BG 
-                }}
-            >
+            <div className="!flex !justify-center !bg-white/60 !backdrop-blur-md !p-1.5 !rounded-full !shadow-sm !border !border-white/60 !max-w-xl !mx-auto !w-full">
                 {MEAL_TABS.map((meal) => (
-                    <button
-                        key={meal.key}
-                        onClick={() => setActiveMeal(meal.key as MealType)}
-                        style={{
-                            flex: 1,
-                            paddingTop: '0.75rem', 
-                            paddingBottom: '0.75rem', 
-                            fontSize: '0.875rem', 
-                            fontWeight: '800', 
-                            transition: 'all 0.3s', 
-                            letterSpacing: '0.05em',
-                            border: 'none',
-                            cursor: 'pointer',
-                            backgroundColor: activeMeal === meal.key ? meal.color : 'transparent',
-                            color: activeMeal === meal.key 
-                                ? (meal.key === 'lunch' ? PRIMARY_TEXT : '#FFFFFF') // Black text for bright lunch color
-                                : SECONDARY_TEXT,
-                            borderRadius: '9999px', 
-                            margin: '0 4px',
-                            boxShadow: activeMeal === meal.key ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
-                        }}
-                    >
+                    <button key={meal.key}
+                        onClick={() => setActiveMeal(meal.key)}
+                        className={`!flex-1 !py-3 !px-6 !text-sm md:!text-base !font-bold !rounded-full !transition-all !duration-300 ${activeMeal === meal.key ? '!bg-[#B52222] !text-white !shadow-md !border !border-[#9a1b1b]' : '!text-gray-500 hover:!text-gray-800 hover:!bg-white/40'}`}>
                         {meal.label}
                     </button>
                 ))}
             </div>
 
-            {/* Food Item List */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', paddingTop: '1rem' }}>
+            {/* Food Item Grid */}
+            <div className="!grid !grid-cols-1 md:!grid-cols-2 lg:!grid-cols-3 xl:!grid-cols-4 !gap-6 !mt-4">
                 {loading ? (
-                    <p style={{ textAlign: 'center', gridColumn: 'span 2', fontSize: '1.125rem', color: SECONDARY_TEXT }}>Loading menu...</p>
+                    <div className="!col-span-full !py-20 !flex !flex-col !items-center !justify-center">
+                        <div className="!w-12 !h-12 !border-4 !border-gray-200 !border-t-[#B52222] !rounded-full !animate-spin !mb-4"></div>
+                        <p className="!text-gray-500 !font-semibold !animate-pulse">Loading menu...</p>
+                    </div>
                 ) : foodItems[activeMeal]?.length > 0 ? (
                     foodItems[activeMeal].map((item: FoodItem) => (
-                        <div 
-                            key={item.id} 
-                            style={{ 
-                                backgroundColor: CARD_BG, 
-                                padding: '1.25rem', 
-                                borderRadius: '0.75rem', 
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center', 
-                                transition: 'transform 0.3s', 
-                                border: `1px solid ${GRAY_BORDER}` 
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.01)'}
-                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                            <div>
-                                <h4 style={{ fontWeight: 'bold', fontSize: '1.125rem', color: PRIMARY_TEXT }}>{item.name}</h4>
-                                <p style={{ fontSize: '0.875rem', color: SECONDARY_TEXT }}>Rs. {item.price}.00</p>
+                        <div key={item.id} className="!bg-white/80 !backdrop-blur-xl !rounded-2xl !shadow-sm hover:!shadow-lg !border !border-white/60 !overflow-hidden !transition-all !duration-300 hover:!-translate-y-1 !flex !flex-col">
+                            <div className="!h-48 !w-full !relative !bg-gray-100">
+                                <Image src={item.image_url || "https://via.placeholder.com/150"} alt={item.name} layout="fill" objectFit="cover" className="!transition-transform !duration-500 hover:!scale-105" />
+                                <div className="!absolute !top-3 !right-3">
+                                    <button onClick={() => handleDelete(item.id)} className="!bg-white/90 !backdrop-blur-md !p-2 !rounded-full !text-red-500 hover:!bg-red-500 hover:!text-white !transition-colors !shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="!h-4 !w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
-                            <button
-                                onClick={() => handleToggleAvailability(item)}
-                                style={{
-                                    paddingLeft: '1rem', 
-                                    paddingRight: '1rem', 
-                                    paddingTop: '0.5rem', 
-                                    paddingBottom: '0.5rem', 
-                                    fontSize: '0.75rem', 
-                                    fontWeight: 'bold', 
-                                    borderRadius: '9999px', 
-                                    transition: 'background-color 0.3s', 
-                                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    backgroundColor: item.available ? SUCCESS_COLOR : ERROR_COLOR,
-                                    color: CARD_BG,
-                                }}
-                            >
-                                {item.available ? 'Available' : 'Out of Stock'}
-                            </button>
+                            <div className="!p-5 !flex !flex-col !flex-grow">
+                                <div className="!flex !justify-between !items-start !mb-2">
+                                    <h4 className="!font-extrabold !text-lg !text-gray-900 !leading-tight">{item.name}</h4>
+                                </div>
+                                <p className="!text-sm !text-gray-500 !mb-4 !line-clamp-2 !flex-grow">{item.description}</p>
+                                
+                                <div className="!flex !justify-between !items-center !mt-auto !pt-4 !border-t !border-gray-100">
+                                    <span className="!text-xl !font-black !text-[#B52222]">Rs. {item.price}.00</span>
+                                    <button onClick={() => handleToggleAvailability(item)}
+                                        className={`!px-3 !py-1.5 !text-xs !font-bold !rounded-full !transition-all !shadow-sm ${item.available ? '!bg-green-100 !text-green-700 hover:!bg-green-200' : '!bg-red-100 !text-red-700 hover:!bg-red-200'}`}>
+                                        {item.available ? 'Available' : 'Out of Stock'}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     ))
                 ) : (
-                    <div style={{ gridColumn: 'span 2', textAlign: 'center', backgroundColor: CARD_BG, padding: '2.5rem', borderRadius: '0.75rem', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
-                           <p style={{ color: SECONDARY_TEXT, fontSize: '1.125rem' }}>No {activeMeal} items listed yet. Time to add some food!</p>
+                    <div className="!col-span-full !bg-white/60 !backdrop-blur-xl !p-12 !rounded-3xl !border !border-white/60 !shadow-[0_8px_30px_rgb(0,0,0,0.04)] !text-center !flex !flex-col !items-center !justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="!h-16 !w-16 !text-gray-400 !mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <p className="!text-gray-500 !text-lg !font-medium">No {activeMeal} items listed yet. Time to add some food!</p>
                     </div>
                 )}
             </div>
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <button 
-                onClick={() => setShowAddForm(true)}
-                style={{
-                    paddingTop: '0.75rem',
-                    paddingBottom: '0.75rem',
-                    paddingLeft: '1.5rem',
-                    paddingRight: '1.5rem',
-                    borderRadius: '0.75rem',
-                    color: CARD_BG,
-                    fontWeight: '500',
-                    fontSize: '1rem',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                    transition: 'box-shadow 0.3s',
-                    backgroundColor: JAPURA_EATS_COLOR,
-                    border: 'none',
-                    cursor: 'pointer',
-                }}
-            >
-                + Add New Item to Menu
-            </button>
-
-            </div>
-            {showAddForm && (
-    <div 
-        style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999
-        }}
-    >
-        <div 
-            style={{
-                background: "#fff",
-                padding: "2rem",
-                borderRadius: "1rem",
-                width: "90%",
-                maxWidth: "450px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
-            }}
-        >
-            <h3 style={{ fontSize: "1.25rem", fontWeight: "700" }}>
-                Add New {activeMeal} Item
-            </h3>
-
-            {/* Name */}
-            <input
-                type="text"
-                placeholder="Food name"
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                style={inputStyle}
-            />
-
-            {/* Price */}
-            <input
-                type="number"
-                placeholder="Price (Rs)"
-                value={newItemPrice}
-                onChange={(e) => setNewItemPrice(e.target.value as any)}
-                style={inputStyle}
-            />
-
-            {/* Description */}
-            <textarea
-                placeholder="Description"
-                value={newItemDescription}
-                onChange={(e) => setNewItemDescription(e.target.value)}
-                style={{
-                    ...inputStyle,
-                    height: "80px",
-                    resize: "none"
-                }}
-            />
-
-            {/* Image upload */}
-            <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ marginTop: "1rem" }}
-            />
-
-            {/* Image Preview */}
-            {newItemImagePreview && (
-                <img 
-                    src={newItemImagePreview} 
-                    alt="Preview" 
-                    style={{
-                        width: "100%",
-                        marginTop: "1rem",
-                        borderRadius: "0.5rem"
-                    }}
-                />
-            )}
-
             
+            {/* Add New Item Button */}
+            <div className="!text-center !mt-8">
+                <button onClick={() => setShowAddForm(true)}
+                    className="!inline-flex !items-center !justify-center !gap-2 !py-4 !px-8 !bg-gradient-to-r !from-[#B52222] !to-[#9a1b1b] !text-white !font-bold !rounded-xl !transition-all !duration-300 !shadow-lg !shadow-red-900/20 hover:!shadow-xl hover:!shadow-red-900/30 hover:!-translate-y-1 active:!scale-[0.98]">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="!h-6 !w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Add New Item to Menu</span>
+                </button>
+            </div>
 
-            {/* Submit */}
-            <button 
-                onClick={submitNewFoodItem}
-                disabled={uploading}
-                style={submitButtonStyle}
-            >
-                {uploading ? "Uploading..." : "Add Item"}
-            </button>
-
-            {/* Cancel */}
-            <button
-                onClick={() => setShowAddForm(false)}
-                style={cancelButtonStyle}
-            >
-                Cancel
-            </button>
-        </div>
-    </div>
-)}
-
-
+            {/* Add Food Form Modal */}
+            {showAddForm && (
+                <div className="!fixed !inset-0 !z-[9999] !flex !items-center !justify-center !p-4 !bg-black/50 !backdrop-blur-sm animate-fade-in-up">
+                    <div className="!bg-white/95 !backdrop-blur-2xl !w-full !max-w-lg !rounded-3xl !shadow-2xl !border !border-white/50 !overflow-hidden !flex !flex-col !max-h-[90vh]">
+                        <div className="!p-6 !border-b !border-gray-100 !flex !justify-between !items-center !bg-gray-50/50">
+                            <h3 className="!text-2xl !font-extrabold !text-gray-900">Add New {activeMeal.charAt(0).toUpperCase() + activeMeal.slice(1)} Item</h3>
+                            <button onClick={() => setShowAddForm(false)} className="!text-gray-400 hover:!text-red-500 !transition-colors !p-2 !rounded-full hover:!bg-red-50">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="!h-6 !w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div className="!p-6 !overflow-y-auto !flex-grow !flex !flex-col !gap-5">
+                            <div>
+                                <label className="!block !text-sm !font-bold !text-gray-700 !mb-1.5 !ml-1">Food Name <span className="!text-red-500">*</span></label>
+                                <input type="text" placeholder="e.g. Chicken Kottu" value={newItemName} onChange={(e) => setNewItemName(e.target.value)} 
+                                    className="!w-full !px-4 !py-3 !bg-gray-50 !border !border-gray-200 !rounded-xl focus:!outline-none focus:!ring-2 focus:!ring-[#B52222]/40 focus:!bg-white !transition-all !text-gray-800 !font-medium" />
+                            </div>
+                            
+                            <div>
+                                <label className="!block !text-sm !font-bold !text-gray-700 !mb-1.5 !ml-1">Price (Rs) <span className="!text-red-500">*</span></label>
+                                <div className="!relative">
+                                    <span className="!absolute !left-4 !top-[50%] !-translate-y-[50%] !text-gray-500 !font-bold">Rs.</span>
+                                    <input type="number" placeholder="0.00" value={newItemPrice} onChange={(e) => setNewItemPrice(e.target.value as any)} 
+                                        className="!w-full !pl-12 !pr-4 !py-3 !bg-gray-50 !border !border-gray-200 !rounded-xl focus:!outline-none focus:!ring-2 focus:!ring-[#B52222]/40 focus:!bg-white !transition-all !text-gray-800 !font-medium" />
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="!block !text-sm !font-bold !text-gray-700 !mb-1.5 !ml-1">Description <span className="!text-red-500">*</span></label>
+                                <textarea placeholder="Delicious and spicy chicken kottu..." value={newItemDescription} onChange={(e) => setNewItemDescription(e.target.value)} 
+                                    className="!w-full !px-4 !py-3 !bg-gray-50 !border !border-gray-200 !rounded-xl focus:!outline-none focus:!ring-2 focus:!ring-[#B52222]/40 focus:!bg-white !transition-all !text-gray-800 !font-medium !h-24 !resize-none" />
+                            </div>
+                            
+                            <div>
+                                <label className="!block !text-sm !font-bold !text-gray-700 !mb-1.5 !ml-1">Food Image</label>
+                                <div className="!relative !border-2 !border-dashed !border-gray-300 !rounded-xl !p-6 !text-center hover:!bg-gray-50 hover:!border-[#B52222]/50 !transition-all !cursor-pointer">
+                                    <input type="file" accept="image/*" onChange={handleImageChange} className="!absolute !inset-0 !w-full !h-full !opacity-0 !cursor-pointer !z-10" />
+                                    {newItemImagePreview ? (
+                                        <div className="!w-full !h-32 !relative !rounded-lg !overflow-hidden">
+                                            <Image src={newItemImagePreview} alt="Preview" layout="fill" objectFit="cover" />
+                                        </div>
+                                    ) : (
+                                        <div className="!flex !flex-col !items-center !text-gray-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="!h-10 !w-10 !mb-2 !text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span className="!font-semibold !text-sm">Click or drag image to upload</span>
+                                            <span className="!text-xs !text-gray-400 !mt-1">PNG, JPG, JPEG</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="!p-6 !border-t !border-gray-100 !bg-gray-50 !flex !gap-4">
+                            <button onClick={() => setShowAddForm(false)} disabled={uploading}
+                                className="!flex-1 !py-3 !bg-white !text-gray-700 !font-bold !rounded-xl !border !border-gray-200 hover:!bg-gray-100 !transition-colors !shadow-sm">
+                                Cancel
+                            </button>
+                            <button onClick={submitNewFoodItem} disabled={uploading}
+                                className="!flex-1 !py-3 !bg-[#B52222] !text-white !font-bold !rounded-xl hover:!bg-[#9a1b1b] !transition-colors !shadow-md disabled:!opacity-70 !flex !justify-center !items-center !gap-2">
+                                {uploading ? (
+                                    <><div className="!w-4 !h-4 !border-2 !border-white !border-t-transparent !rounded-full !animate-spin"></div><span>Uploading...</span></>
+                                ) : (
+                                    <span>Add Item</span>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

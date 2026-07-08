@@ -52,8 +52,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, setUser }) => 
 
         {/* Header */}
         <div className="!text-center !mb-8">
-          <div className="!flex !justify-center !mb-1">
-            <Image src="/landing/logo.png" width={100} height={100} alt="Japura Eats" className="!object-contain" />
+          <div className="!flex !justify-center !-mb-2">
+            <Image src="/landing/logo.png" width={140} height={140} alt="Japura Eats" className="!object-contain" />
           </div>
           
           <h2 className="!text-2xl !font-extrabold !text-gray-900 !tracking-tight">

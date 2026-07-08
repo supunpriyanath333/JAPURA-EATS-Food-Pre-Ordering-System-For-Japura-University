@@ -67,10 +67,10 @@ const CustomXAxisTick = ({ x, y, payload }: any) => {
     const line2 = words.slice(mid).join(' ');
 
     return (
-        <g transform={`translate(${x},${y}) rotate(-25)`}>
+        <g transform={`translate(${x},${y})`}>
             <text x={0} y={0} textAnchor="middle" fill="#6B7280" fontSize={11} fontWeight="bold">
-                <tspan x={-15} dy="12">{line1}</tspan>
-                <tspan x={-15} dy="14">{line2}</tspan>
+                <tspan x={0} dy="12">{line1}</tspan>
+                <tspan x={0} dy="14">{line2}</tspan>
             </text>
         </g>
     );
@@ -253,6 +253,16 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
 
     const COLORS = ['#B52222', '#D32F2F', '#E57373', '#EF9A9A', '#FFCDD2'];
 
+    const maxRevenue = comparisonData.length > 0 ? Math.max(...comparisonData.map(d => d.revenue)) : 1;
+    const getBarColor = (revenue: number) => {
+        const ratio = revenue / (maxRevenue || 1);
+        if (ratio >= 0.8) return COLORS[0];
+        if (ratio >= 0.6) return COLORS[1];
+        if (ratio >= 0.4) return COLORS[2];
+        if (ratio >= 0.2) return COLORS[3];
+        return COLORS[4];
+    };
+
     return (
         <div className="!animate-fade-in-up !relative !flex !flex-col !gap-6">
             {/* Header Area */}
@@ -260,7 +270,7 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                 <div className="!flex !items-center !gap-4">
                     <button
                         onClick={onBack}
-                        className="!p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm"
+                        className="!cursor-pointer !p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm"
                     >
                         <svg className="!w-5 !h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     </button>
@@ -277,7 +287,7 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                         <select
                             value={selectedCanteen}
                             onChange={(e) => setSelectedCanteen(e.target.value)}
-                            className="!appearance-none !bg-white/80 !backdrop-blur-md !border !border-white/80 !text-gray-900 !text-sm !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !w-full !py-2.5 !pl-3 !pr-9 !shadow-sm !outline-none !cursor-pointer"
+                            className="!cursor-pointer !appearance-none !bg-white/80 !backdrop-blur-md !border !border-white/80 !text-gray-900 !text-sm !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !w-full !py-2.5 !pl-3 !pr-9 !shadow-sm !outline-none"
                         >
                             <option value="ALL">All Canteens</option>
                             {canteens.map(c => (
@@ -313,7 +323,7 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                             <select
                                 value={rangeDuration}
                                 onChange={(e) => setRangeDuration(Number(e.target.value))}
-                                className="!appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none !cursor-pointer"
+                                className="!cursor-pointer !appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none"
                             >
                                 {getDurationOptions(timeRange).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -327,10 +337,9 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                         {/* Time Range Toggle */}
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
                             {(['by day', 'by week', 'by month'] as const).map(range => (
-                                <button
-                                    key={range}
+                                <button key={range}
                                     onClick={() => handleTimeRangeChange(range)}
-                                    className={`!px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${timeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                                    className={`!cursor-pointer !px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${timeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 >
                                     {range === 'by day' ? 'Daily' : range === 'by week' ? 'Weekly' : 'Monthly'}
                                 </button>
@@ -338,16 +347,14 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                         </div>
                         
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
-                            <button
-                                onClick={() => setChartType('line')}
-                                className={`!p-1.5 !rounded-lg !transition-all ${chartType === 'line' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                            <button onClick={() => setChartType('line')}
+                                className={`!cursor-pointer !p-1.5 !rounded-lg !transition-all ${chartType === 'line' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 title="Line Chart"
                             >
                                 <svg className="!w-4 !h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                             </button>
-                            <button
-                                onClick={() => setChartType('bar')}
-                                className={`!p-1.5 !rounded-lg !transition-all ${chartType === 'bar' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                            <button onClick={() => setChartType('bar')}
+                                className={`!cursor-pointer !p-1.5 !rounded-lg !transition-all ${chartType === 'bar' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 title="Bar Chart"
                             >
                                 <svg className="!w-4 !h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-4"></path></svg>
@@ -389,7 +396,7 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                             <select
                                 value={compRangeDuration}
                                 onChange={(e) => setCompRangeDuration(Number(e.target.value))}
-                                className="!appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none !cursor-pointer"
+                                className="!cursor-pointer !appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none"
                             >
                                 {getDurationOptions(compTimeRange).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -403,10 +410,9 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                         {/* Comp Time Range Toggle */}
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
                             {(['by day', 'by week', 'by month'] as const).map(range => (
-                                <button
-                                    key={range}
+                                <button key={range}
                                     onClick={() => handleCompTimeRangeChange(range)}
-                                    className={`!px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${compTimeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                                    className={`!cursor-pointer !px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${compTimeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 >
                                     {range === 'by day' ? 'Daily' : range === 'by week' ? 'Weekly' : 'Monthly'}
                                 </button>
@@ -425,7 +431,7 @@ const RevenueAnalytics: React.FC<RevenueAnalyticsProps> = ({ orders, canteens, o
                                 <Tooltip content={<ComparisonTooltip />} cursor={{ fill: 'rgba(200,200,200,0.1)' }} />
                                 <Bar dataKey="revenue" radius={[6, 6, 0, 0]} maxBarSize={50}>
                                     {comparisonData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        <Cell key={`cell-${index}`} fill={getBarColor(entry.revenue)} />
                                     ))}
                                 </Bar>
                             </BarChart>

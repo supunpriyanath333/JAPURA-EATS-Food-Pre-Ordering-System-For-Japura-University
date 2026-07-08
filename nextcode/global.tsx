@@ -27,6 +27,8 @@ export interface FoodItem {
     name: string;
     price: number; // Use number for currency
     available: boolean;
+    description?: string;
+    image_url?: string;
 }
 
 /** Grouped Food Items by Meal Type */

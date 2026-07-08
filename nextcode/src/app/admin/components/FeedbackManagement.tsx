@@ -2,12 +2,18 @@
 import React, { useState } from 'react';
 
 const FeedbackManagement: React.FC = () => {
+    const [visibleReviews, setVisibleReviews] = useState(5);
     const [reviews] = useState([
         { id: 1, student: 'Kamal Perera', studentId: 'ST1005', canteen: 'Central Mess Hall', item: 'Chicken Kottu', rating: 5, date: 'Today, 2:30 PM' },
         { id: 2, student: 'Amali Fernando', studentId: 'ST1021', canteen: 'Science Faculty Canteen', item: 'Vegetable Rice', rating: 3, date: 'Today, 1:15 PM' },
         { id: 3, student: 'Kasun Kalhara', studentId: 'ST1008', canteen: 'Central Mess Hall', item: 'Milk Rice', rating: 4, date: 'Yesterday, 8:45 AM' },
         { id: 4, student: 'Sunil Shantha', studentId: 'SF1002', canteen: 'Management Faculty Cafe', item: 'Fish Bun', rating: 2, date: 'Yesterday, 10:20 AM' },
         { id: 5, student: 'Dr. Nimal Silva', studentId: 'LC1001', canteen: 'Science Faculty Canteen', item: 'Fish Curry Rice', rating: 5, date: 'Yesterday, 1:30 PM' },
+        { id: 6, student: 'Piyal Weerasinghe', studentId: 'ST2045', canteen: 'Medical Faculty Canteen', item: 'Cheese Omelet', rating: 4, date: 'Yesterday, 3:15 PM' },
+        { id: 7, student: 'Nuwan Perera', studentId: 'ST1902', canteen: 'Library Cafe', item: 'Iced Coffee', rating: 5, date: '2 Days Ago, 9:00 AM' },
+        { id: 8, student: 'Saman Kumara', studentId: 'ST1122', canteen: 'Management Faculty Cafe', item: 'Chicken Fried Rice', rating: 3, date: '2 Days Ago, 12:30 PM' },
+        { id: 9, student: 'Ruwanthi de Silva', studentId: 'ST3091', canteen: 'Central Mess Hall', item: 'Parata', rating: 4, date: '3 Days Ago, 6:45 PM' },
+        { id: 10, student: 'Nadeesha Senaratne', studentId: 'SF1043', canteen: 'Library Cafe', item: 'Vegetable Sandwich', rating: 5, date: '3 Days Ago, 10:10 AM' },
     ]);
 
     return (
@@ -37,11 +43,11 @@ const FeedbackManagement: React.FC = () => {
                     <h3 className="!text-xl !font-black !text-gray-900 !mb-6">Rating Breakdown</h3>
                     <div className="!space-y-4">
                         {[
-                            { stars: 5, pct: 65, count: 842, color: '!bg-green-500' },
-                            { stars: 4, pct: 20, count: 256, color: '!bg-lime-500' },
+                            { stars: 5, pct: 65, count: 842, color: '!bg-yellow-400' },
+                            { stars: 4, pct: 20, count: 256, color: '!bg-yellow-400' },
                             { stars: 3, pct: 10, count: 124, color: '!bg-yellow-400' },
-                            { stars: 2, pct: 3, count: 32, color: '!bg-orange-400' },
-                            { stars: 1, pct: 2, count: 15, color: '!bg-red-500' },
+                            { stars: 2, pct: 3, count: 32, color: '!bg-yellow-400' },
+                            { stars: 1, pct: 2, count: 15, color: '!bg-yellow-400' },
                         ].map(row => (
                             <div key={row.stars} className="!flex !items-center !gap-4 !group">
                                 <div className="!flex !items-center !gap-1.5 !w-12 !justify-end">
@@ -63,16 +69,16 @@ const FeedbackManagement: React.FC = () => {
                 
                 {/* Canteen Ratings Section */}
                 <div className="!bg-white/60 !backdrop-blur-xl !border !border-white/60 !rounded-3xl !shadow-[0_4px_20px_rgb(0,0,0,0.03)] !p-8 !flex !flex-col">
-                    <h3 className="!text-xl !font-black !text-gray-900 !mb-6 !flex !items-center !gap-2">
-                        <svg className="!w-6 !h-6 !text-[#B52222]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                        Canteen Average Ratings
+                    <h3 className="!text-xl !font-black !text-gray-900 !mb-6">
+                        Top 5 Canteens
                     </h3>
                     <div className="!space-y-4 !flex-1">
                         {[
                             { name: 'Central Mess Hall', rating: 4.8, reviews: 342 },
                             { name: 'Science Faculty Canteen', rating: 4.5, reviews: 128 },
-                            { name: 'Management Faculty Cafe', rating: 3.9, reviews: 95 },
-                            { name: 'Medical Faculty Canteen', rating: 4.2, reviews: 156 }
+                            { name: 'Medical Faculty Canteen', rating: 4.2, reviews: 156 },
+                            { name: 'Library Cafe', rating: 4.1, reviews: 210 },
+                            { name: 'Management Faculty Cafe', rating: 3.9, reviews: 95 }
                         ].map((canteen, idx) => (
                             <div key={idx} className="!flex !items-center !justify-between !p-4 !bg-white/40 !backdrop-blur-md !rounded-2xl !border !border-white/60 hover:!bg-white/70 hover:!shadow-[0_4px_15px_rgba(0,0,0,0.05)] !transition-all !duration-300 !group">
                                 <div>
@@ -90,17 +96,15 @@ const FeedbackManagement: React.FC = () => {
 
                 {/* Top Items Ratings Section */}
                 <div className="!bg-white/60 !backdrop-blur-xl !border !border-white/60 !rounded-3xl !shadow-[0_8px_30px_rgb(0,0,0,0.04)] !p-8 !flex !flex-col !transition-all !duration-300 hover:!shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-                    <h3 className="!text-xl !font-black !text-gray-900 !mb-6 !flex !items-center !gap-3">
-                        <div className="!p-2 !bg-red-50 !rounded-xl !text-[#B52222] !shadow-inner !border !border-red-100">
-                            <svg className="!w-5 !h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        </div>
-                        Top Rated Food Items
+                    <h3 className="!text-xl !font-black !text-gray-900 !mb-6">
+                        Top 5 Food Items
                     </h3>
                     <div className="!space-y-4 !flex-1">
                         {[
                             { name: 'Chicken Kottu', canteen: 'Central Mess Hall', rating: 4.9 },
                             { name: 'Fish Curry Rice', canteen: 'Science Faculty Canteen', rating: 4.7 },
                             { name: 'Cheese Omelet', canteen: 'Medical Faculty Canteen', rating: 4.6 },
+                            { name: 'Vegetable Fried Rice', canteen: 'Library Cafe', rating: 4.5 },
                             { name: 'Iced Coffee', canteen: 'Management Faculty Cafe', rating: 4.4 }
                         ].map((item, idx) => (
                             <div key={idx} className="!flex !items-center !justify-between !p-4 !bg-white/40 !backdrop-blur-md !rounded-2xl !border !border-white/60 hover:!bg-white/70 hover:!shadow-[0_4px_15px_rgba(0,0,0,0.05)] !transition-all !duration-300 !group">
@@ -121,8 +125,7 @@ const FeedbackManagement: React.FC = () => {
 
             {/* Recent Ratings Table - Glassmorphism */}
             <div className="!bg-white/60 !backdrop-blur-xl !border !border-white/60 !rounded-3xl !shadow-[0_8px_30px_rgb(0,0,0,0.04)] !overflow-hidden">
-                <div className="!px-8 !py-6 !border-b !border-white/60 !bg-white/40 !flex !items-center !gap-3">
-                    <svg className="!w-6 !h-6 !text-[#B52222]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <div className="!px-8 !py-6 !border-b !border-white/60 !bg-white/40">
                     <h3 className="!text-xl !font-black !text-gray-900">Recent Ratings</h3>
                 </div>
                 <div className="!overflow-x-auto">
@@ -137,7 +140,7 @@ const FeedbackManagement: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody className="!divide-y !divide-white/40">
-                            {reviews.map((rev) => (
+                            {reviews.slice(0, visibleReviews).map((rev) => (
                                 <tr key={rev.id} className="hover:!bg-white/50 !transition-colors !group">
                                     <td className="!px-8 !py-5">
                                         <div className="!flex !items-center !gap-3">
@@ -175,6 +178,16 @@ const FeedbackManagement: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+                {visibleReviews < reviews.length && (
+                    <div className="!p-4 !flex !justify-center !border-t !border-white/40 !bg-white/20">
+                        <button 
+                            onClick={() => setVisibleReviews(prev => prev + 5)}
+                            className="!px-6 !py-2.5 !bg-white/60 hover:!bg-white/90 !text-gray-800 !font-bold !rounded-xl !transition-colors !shadow-sm"
+                        >
+                            View More
+                        </button>
+                    </div>
+                )}
             </div>
 
             <style dangerouslySetInnerHTML={{__html: `

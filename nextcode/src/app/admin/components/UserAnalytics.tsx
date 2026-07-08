@@ -248,7 +248,7 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
                 <div className="!flex !items-center !gap-4">
                     <button
                         onClick={onBack}
-                        className="!p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm !cursor-pointer"
+                        className="!cursor-pointer !p-2.5 !bg-white/80 hover:!bg-red-50 !text-gray-600 hover:!text-red-600 !rounded-xl !transition-colors !border !border-white/80 !shadow-sm"
                     >
                         <svg className="!w-5 !h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     </button>
@@ -290,7 +290,7 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
                             <select
                                 value={rangeDuration}
                                 onChange={(e) => setRangeDuration(Number(e.target.value))}
-                                className="!appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none !cursor-pointer"
+                                className="!cursor-pointer !appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none"
                             >
                                 {getDurationOptions(timeRange).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -303,10 +303,9 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
 
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
                             {(['by day', 'by week', 'by month'] as const).map(range => (
-                                <button
-                                    key={range}
+                                <button key={range}
                                     onClick={() => handleTimeRangeChange(range)}
-                                    className={`!px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${timeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                                    className={`!cursor-pointer !px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${timeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 >
                                     {range === 'by day' ? 'Daily' : range === 'by week' ? 'Weekly' : 'Monthly'}
                                 </button>
@@ -314,15 +313,13 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
                         </div>
                         
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
-                            <button
-                                onClick={() => setChartType('line')}
-                                className={`!p-1.5 !rounded-lg !transition-all ${chartType === 'line' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                            <button onClick={() => setChartType('line')}
+                                className={`!cursor-pointer !p-1.5 !rounded-lg !transition-all ${chartType === 'line' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                             >
                                 <svg className="!w-4 !h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                             </button>
-                            <button
-                                onClick={() => setChartType('bar')}
-                                className={`!p-1.5 !rounded-lg !transition-all ${chartType === 'bar' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                            <button onClick={() => setChartType('bar')}
+                                className={`!cursor-pointer !p-1.5 !rounded-lg !transition-all ${chartType === 'bar' ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                             >
                                 <svg className="!w-4 !h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
                             </button>
@@ -363,7 +360,7 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
                             <select
                                 value={compRangeDuration}
                                 onChange={(e) => setCompRangeDuration(Number(e.target.value))}
-                                className="!appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none !cursor-pointer"
+                                className="!cursor-pointer !appearance-none !bg-white !backdrop-blur-md !border !border-white/80 !text-[#B52222] !text-xs !font-bold !rounded-xl !focus:ring-[#B52222] !focus:border-[#B52222] !block !py-1.5 !pl-3 !pr-8 !shadow-sm !outline-none"
                             >
                                 {getDurationOptions(compTimeRange).map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -376,10 +373,9 @@ const UserAnalytics: React.FC<UserAnalyticsProps> = ({ users, loginLogs, onBack 
 
                         <div className="!flex !bg-gray-200 !p-1 !rounded-xl !border !border-gray-300/50">
                             {(['by day', 'by week', 'by month'] as const).map(range => (
-                                <button
-                                    key={range}
+                                <button key={range}
                                     onClick={() => handleCompTimeRangeChange(range)}
-                                    className={`!px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${compTimeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
+                                    className={`!cursor-pointer !px-4 !py-1.5 !text-xs !font-bold !rounded-lg !capitalize !transition-all ${compTimeRange === range ? '!bg-white !text-[#B52222] !shadow-sm' : '!text-gray-500 hover:!text-gray-700'}`}
                                 >
                                     {range === 'by day' ? 'Daily' : range === 'by week' ? 'Weekly' : 'Monthly'}
                                 </button>

@@ -150,7 +150,8 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                 setEditingCanteen(null);
                 fetchCanteens();
             } else {
-                alert("Failed to update canteen");
+                const errData = await res.json();
+                alert("Failed to update canteen: " + (errData.error || 'Unknown error'));
             }
         } catch (err) {
             console.error(err);
@@ -192,9 +193,8 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                     <h2 className="!text-3xl !font-extrabold !text-gray-900 !tracking-tight">Canteen Management</h2>
                     <p className="!text-sm !font-semibold !text-gray-500 !mt-1">Manage university canteens and their seller accounts.</p>
                 </div>
-                <button 
-                    onClick={() => setShowAddModal(true)}
-                    className="!bg-gradient-to-r !from-[#B52222] !to-[#8a1919] !text-white !px-6 !py-3 !rounded-xl !font-bold !shadow-lg !shadow-red-900/20 hover:!shadow-xl hover:!shadow-red-900/30 hover:!-translate-y-0.5 !transition-all !flex !items-center !gap-2"
+                <button onClick={() => setShowAddModal(true)}
+                    className="!cursor-pointer !bg-gradient-to-r !from-[#B52222] !to-[#8a1919] !text-white !px-6 !py-3 !rounded-xl !font-bold !shadow-lg !shadow-red-900/20 hover:!shadow-xl hover:!shadow-red-900/30 hover:!-translate-y-0.5 !transition-all !flex !items-center !gap-2"
                 >
                     <svg className="!w-5 !h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add New Canteen
@@ -225,16 +225,14 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                             
                             {/* Action Buttons */}
                             <div className="!absolute !top-2 !right-2 !flex !gap-1.5 !z-10">
-                                <button 
-                                    onClick={() => openEditModal(canteen)}
-                                    className="!p-2 !bg-white/90 !backdrop-blur-sm !text-blue-600 hover:!bg-blue-50 !rounded-xl !shadow-sm !border !border-gray-200/50 !transition-colors"
+                                <button onClick={() => openEditModal(canteen)}
+                                    className="!cursor-pointer !p-2 !bg-white/90 !backdrop-blur-sm !text-blue-600 hover:!bg-blue-50 !rounded-xl !shadow-sm !border !border-gray-200/50 !transition-colors"
                                     title="Edit Canteen"
                                 >
                                     <svg className="!w-4 !h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 </button>
-                                <button 
-                                    onClick={() => handleDeleteCanteen(canteen.id, canteen.name)}
-                                    className="!p-2 !bg-white/90 !backdrop-blur-sm !text-red-600 hover:!bg-red-50 !rounded-xl !shadow-sm !border !border-gray-200/50 !transition-colors"
+                                <button onClick={() => handleDeleteCanteen(canteen.id, canteen.name)}
+                                    className="!cursor-pointer !p-2 !bg-white/90 !backdrop-blur-sm !text-red-600 hover:!bg-red-50 !rounded-xl !shadow-sm !border !border-gray-200/50 !transition-colors"
                                     title="Delete Canteen"
                                 >
                                     <svg className="!w-4 !h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -260,9 +258,8 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
 
                         <div className="!flex !items-center !justify-between !border-t !border-gray-100 !pt-4 !mt-auto">
                             <span className="!text-xs !font-black !text-gray-400 !uppercase !tracking-wider">Status</span>
-                            <button 
-                                onClick={() => toggleCanteenStatus(canteen.id)}
-                                className={`!relative !inline-flex !h-7 !w-12 !items-center !rounded-full !transition-colors !cursor-pointer focus:!outline-none ${
+                            <button onClick={() => toggleCanteenStatus(canteen.id)}
+                                className={`!cursor-pointer !relative !inline-flex !h-7 !w-12 !items-center !rounded-full !transition-colors focus:!outline-none ${
                                     !disabledCanteens[canteen.id] ? '!bg-green-500' : '!bg-gray-300'
                                 }`}
                             >
@@ -279,7 +276,7 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                 {/* Empty State / Add CTA Card */}
                 <div 
                     onClick={() => setShowAddModal(true)}
-                    className="!bg-white/40 !backdrop-blur-xl !border-2 !border-dashed !border-white/60 !rounded-2xl !p-6 !min-h-[300px] !flex !flex-col !items-center !justify-center !text-center hover:!border-[#B52222]/40 hover:!bg-red-50/40 !transition-all !cursor-pointer !group !shadow-[0_4px_20px_rgb(0,0,0,0.02)]"
+                    className="!cursor-pointer !bg-white/40 !backdrop-blur-xl !border-2 !border-dashed !border-white/60 !rounded-2xl !p-6 !min-h-[300px] !flex !flex-col !items-center !justify-center !text-center hover:!border-[#B52222]/40 hover:!bg-red-50/40 !transition-all !group !shadow-[0_4px_20px_rgb(0,0,0,0.02)]"
                 >
                     <div className="!w-16 !h-16 !rounded-full !bg-white !shadow-sm !flex !items-center !justify-center !mb-4 group-hover:!scale-110 !transition-transform">
                         <svg className="!w-8 !h-8 !text-gray-400 group-hover:!text-[#B52222] !transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -300,9 +297,8 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                                 <h3 className="!text-2xl !font-black !text-gray-900">Create New Canteen</h3>
                                 <p className="!text-sm !font-semibold !text-gray-500 !mt-1">Fill in the details to register a new vendor.</p>
                             </div>
-                            <button 
-                                onClick={() => setShowAddModal(false)}
-                                className="!p-2 !bg-gray-100 !text-gray-500 hover:!bg-gray-200 hover:!text-gray-900 !rounded-full !transition-colors"
+                            <button onClick={() => setShowAddModal(false)}
+                                className="!cursor-pointer !p-2 !bg-gray-100 !text-gray-500 hover:!bg-gray-200 hover:!text-gray-900 !rounded-full !transition-colors"
                             >
                                 <svg className="!w-6 !h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
@@ -342,7 +338,7 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                                                     setImageFile(e.target.files[0]);
                                                 }
                                             }}
-                                            className="!absolute !inset-0 !w-full !h-full !opacity-0 !cursor-pointer"
+                                            className="!absolute !inset-0 !w-full !h-full !opacity-0"
                                             required
                                         />
                                         <div className="!flex !flex-col !items-center">
@@ -359,10 +355,9 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                         </div>
 
                         <div className="!p-6 !bg-gray-50 !border-t !border-gray-100 !flex !justify-end !gap-3">
-                            <button 
-                                type="button"
+                            <button type="button"
                                 onClick={() => setShowAddModal(false)}
-                                className="!px-6 !py-3 !rounded-xl !font-bold !text-gray-600 hover:!bg-gray-200 !transition-colors"
+                                className="!cursor-pointer !px-6 !py-3 !rounded-xl !font-bold !text-gray-600 hover:!bg-gray-200 !transition-colors"
                             >
                                 Cancel
                             </button>
@@ -388,9 +383,8 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                                 <h3 className="!text-2xl !font-black !text-gray-900">Edit Canteen</h3>
                                 <p className="!text-sm !font-semibold !text-gray-500 !mt-1">Update details for {editingCanteen.name}</p>
                             </div>
-                            <button 
-                                onClick={() => setEditingCanteen(null)}
-                                className="!p-2 !bg-gray-100 !text-gray-500 hover:!bg-gray-200 hover:!text-gray-900 !rounded-full !transition-colors"
+                            <button onClick={() => setEditingCanteen(null)}
+                                className="!cursor-pointer !p-2 !bg-gray-100 !text-gray-500 hover:!bg-gray-200 hover:!text-gray-900 !rounded-full !transition-colors"
                             >
                                 <svg className="!w-6 !h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
@@ -414,16 +408,15 @@ const CanteenManagement: React.FC<CanteenManagementProps> = ({ canteens, fetchCa
                         </div>
 
                         <div className="!p-6 !bg-gray-50 !border-t !border-gray-100 !flex !justify-end !gap-3">
-                            <button 
-                                onClick={() => setEditingCanteen(null)}
-                                className="!px-6 !py-3 !rounded-xl !font-bold !text-gray-600 hover:!bg-gray-200 !transition-colors"
+                            <button onClick={() => setEditingCanteen(null)}
+                                className="!cursor-pointer !px-6 !py-3 !rounded-xl !font-bold !text-gray-600 hover:!bg-gray-200 !transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSaveEdit}
                                 disabled={editLoading}
-                                className="!bg-[#B52222] hover:!bg-red-800 !text-white !px-8 !py-3 !rounded-xl !font-bold !shadow-md !transition-colors !flex !items-center !gap-2 disabled:!opacity-50"
+                                className="!cursor-pointer !bg-[#B52222] hover:!bg-red-800 !text-white !px-8 !py-3 !rounded-xl !font-bold !shadow-md !transition-colors !flex !items-center !gap-2 disabled:!opacity-50"
                             >
                                 {editLoading ? 'Saving...' : 'Save Changes'}
                             </button>

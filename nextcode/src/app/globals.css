@@ -133,6 +133,10 @@ body {
   line-height: 1.6;
 }
 
+button {
+  cursor: pointer !important;
+}
+
 h1,
 h2,
 h3,

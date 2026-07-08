@@ -68,18 +68,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setView }) => {
   return (
     <div className="animate-fade-in !max-h-[60vh] !overflow-y-auto !pr-2 custom-scrollbar">
       <form onSubmit={handleRegisterSubmit} className="!flex !flex-col !gap-4">
-        
+
         <div className="!bg-white/50 !p-1.5 !rounded-xl !border !border-white/60 !flex !items-center !shadow-sm">
           {(["student", "lecturer", "staff"] as const).map((roleOption) => (
             <label key={roleOption} className="!flex-1 !cursor-pointer">
               <div className="!flex !items-center !justify-center !gap-2 !py-2 !rounded-lg !transition-all hover:!bg-white/50">
-                <input 
-                  type="radio" 
-                  name="role" 
-                  value={roleOption} 
+                <input
+                  type="radio"
+                  name="role"
+                  value={roleOption}
                   checked={selectedRole === roleOption}
                   onChange={() => setSelectedRole(roleOption)}
-                  className="!w-4 !h-4 !accent-[#B52222] !cursor-pointer" 
+                  className="!w-4 !h-4 !accent-[#B52222] !cursor-pointer"
                 />
                 <span className="!text-sm !font-semibold !text-gray-700 !capitalize">
                   {roleOption}
@@ -91,15 +91,15 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setView }) => {
 
         <div>
           <label className={labelStyles}>Full Name</label>
-          <input type="text" name="full_name" placeholder="John Doe" required className={inputStyles} />
+          <input type="text" name="full_name" placeholder="Nimal Perera" required className={inputStyles} />
         </div>
-        
+
         {/* Dynamic Fields based on Role */}
         {selectedRole === 'student' && (
           <>
             <div>
               <label className={labelStyles}>Student Reg No</label>
-              <input type="text" name="student_reg_no" placeholder="e.g. AS2020XXX" required className={inputStyles} />
+              <input type="text" name="student_reg_no" placeholder="e.g. AR12345" required className={inputStyles} />
             </div>
             <div>
               <label className={labelStyles}>Faculty</label>
@@ -136,19 +136,19 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ setView }) => {
 
         <div>
           <label className={labelStyles}>Email Address</label>
-          <input type="email" name="email" placeholder="john@example.com" required className={inputStyles} />
+          <input type="email" name="email" placeholder="Mail@example.com" required className={inputStyles} />
         </div>
-        
+
         <div>
           <label className={labelStyles}>Mobile Number</label>
           <input type="tel" name="mobile" placeholder="07XXXXXXXX" required className={inputStyles} />
         </div>
-        
+
         <div>
           <label className={labelStyles}>Password</label>
           <input type="password" name="password" placeholder="••••••••" required className={inputStyles} />
         </div>
-        
+
         <div>
           <label className={labelStyles}>Confirm Password</label>
           <input type="password" name="confirmPassword" placeholder="••••••••" required className={inputStyles} />
