@@ -8,7 +8,8 @@ const env = fs.readFileSync('.env.local', 'utf-8').split('\n').reduce((acc, line
 const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 async function check() {
-    const { data } = await supabase.from('order_items').select('*').limit(1);
-    console.log(data);
+    const { data, error } = await supabase.from('orders').select(`id, users (full_name)`).limit(1);
+    if(error) console.error(error);
+    else console.log(JSON.stringify(data, null, 2));
 }
 check();

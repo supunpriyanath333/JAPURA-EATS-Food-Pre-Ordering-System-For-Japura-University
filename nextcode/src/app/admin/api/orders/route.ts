@@ -78,6 +78,7 @@ export async function GET(req: NextRequest) {
                 created_at,
                 status,
                 otp,
+                users (full_name),
                 order_items (name, quantity, price)
             `)
             .in("id", Array.from(orderIds))
@@ -103,6 +104,7 @@ export async function GET(req: NextRequest) {
 
             return {
                 id: order.id,
+                userName: (order.users as any)?.full_name || 'Unknown User',
                 // Using real OTP if exists, fallback to '****'
                 otp: order.otp || "****",
                 // FIX 1: Map the DB status string to the defined Frontend type (accepted, preparing, ready, picked_up)
